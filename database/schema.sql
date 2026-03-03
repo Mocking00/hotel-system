@@ -1,0 +1,2 @@
+-- Script inicial de base de datos
+-- Será implementado en siguiente iteración
