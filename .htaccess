@@ -1,0 +1,17 @@
+# Activar rewrite engine
+RewriteEngine On
+
+# Redirigir a index.php si no es un archivo o directorio
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Prevenir acceso directo a archivos PHP de configuración
+<FilesMatch "^(config|\.env)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Configuración de errores
+php_flag display_errors On
+php_value error_reporting E_ALL
