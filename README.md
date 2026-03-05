@@ -29,7 +29,7 @@ Clonar repositorio
 
 Configurar servidor Apache y PHP 8.2
 
-Crear base de datos en SQL Server
+Crear base de datos en MySQL
 
 Configurar credenciales en config/Database.php
 
