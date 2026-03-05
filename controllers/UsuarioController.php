@@ -9,8 +9,9 @@
 
 session_start();
 
-require_once '../../config/database.php';
-require_once '../../models/Usuario.php';
+// Usar rutas absolutas desde el directorio del archivo
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/Usuario.php';
 
 class UsuarioController {
     private $db;
@@ -34,7 +35,7 @@ class UsuarioController {
             // Validar que no estén vacíos
             if (empty($username) || empty($password)) {
                 $_SESSION['error'] = "Por favor complete todos los campos";
-                header("Location: ../../views/auth/login.php");
+                header("Location: /hotel-system/views/auth/login.php");
                 exit();
             }
             
@@ -50,26 +51,26 @@ class UsuarioController {
                 $_SESSION['username'] = $resultado['username'];
                 $_SESSION['rol'] = $resultado['rol'];
                 
-                // Redirigir según el rol
+                // Redirigir según el rol usando RUTAS ABSOLUTAS
                 switch ($resultado['rol']) {
                     case 'cliente':
-                        header("Location: ../../views/cliente/dashboard.php");
+                        header("Location: /hotel-system/views/cliente/dashboard.php");
                         break;
                     case 'recepcionista':
-                        header("Location: ../../views/recepcionista/dashboard.php");
+                        header("Location: /hotel-system/views/recepcionista/dashboard.php");
                         break;
                     case 'administrador':
-                        header("Location: ../../views/admin/dashboard.php");
+                        header("Location: /hotel-system/views/admin/dashboard.php");
                         break;
                     default:
                         $_SESSION['error'] = "Rol no reconocido";
-                        header("Location: ../../views/auth/login.php");
+                        header("Location: /hotel-system/views/auth/login.php");
                 }
                 exit();
             } else {
                 // Login fallido
                 $_SESSION['error'] = "Usuario o contraseña incorrectos";
-                header("Location: ../../views/auth/login.php");
+                header("Location: /hotel-system/views/auth/login.php");
                 exit();
             }
         }
@@ -82,7 +83,7 @@ class UsuarioController {
         session_start();
         session_unset();
         session_destroy();
-        header("Location: ../../views/auth/login.php");
+        header("Location: /hotel-system/views/auth/login.php");
         exit();
     }
     
@@ -99,19 +100,19 @@ class UsuarioController {
             // Validaciones
             if (empty($username) || empty($password) || empty($password_confirm)) {
                 $_SESSION['error'] = "Todos los campos son obligatorios";
-                header("Location: ../../views/auth/registro.php");
+                header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
             
             if ($password !== $password_confirm) {
                 $_SESSION['error'] = "Las contraseñas no coinciden";
-                header("Location: ../../views/auth/registro.php");
+                header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
             
             if (strlen($password) < 6) {
                 $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres";
-                header("Location: ../../views/auth/registro.php");
+                header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
             
@@ -119,23 +120,23 @@ class UsuarioController {
             $this->usuario->username = $username;
             if ($this->usuario->existeUsername()) {
                 $_SESSION['error'] = "El nombre de usuario ya está en uso";
-                header("Location: ../../views/auth/registro.php");
+                header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
             
             // Crear usuario
             $this->usuario->username = $username;
             $this->usuario->password = $password;
-            $this->usuario->rol = 'cliente';  // Por defecto es cliente
+            $this->usuario->rol = 'cliente';
             $this->usuario->activo = 1;
             
             if ($this->usuario->crear()) {
                 $_SESSION['success'] = "Registro exitoso. Por favor inicia sesión.";
-                header("Location: ../../views/auth/login.php");
+                header("Location: /hotel-system/views/auth/login.php");
                 exit();
             } else {
                 $_SESSION['error'] = "Error al crear el usuario. Intente nuevamente.";
-                header("Location: ../../views/auth/registro.php");
+                header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
         }
@@ -157,7 +158,7 @@ if (isset($_GET['action'])) {
             $controller->registrar();
             break;
         default:
-            header("Location: ../../views/auth/login.php");
+            header("Location: /hotel-system/views/auth/login.php");
             exit();
     }
 } else {

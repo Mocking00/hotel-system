@@ -1,3 +1,22 @@
+<?php
+session_start();
+
+// Si ya hay sesión activa, redirigir
+if (isset($_SESSION['usuario_id'])) {
+    header("Location: ../../index.php");
+    exit();
+}
+
+// Obtener mensajes de error o éxito
+$error = $_SESSION['error'] ?? '';
+$success = $_SESSION['success'] ?? '';
+$debug = $_SESSION['debug'] ?? '';
+
+// Limpiar mensajes de la sesión
+unset($_SESSION['error']);
+unset($_SESSION['success']);
+unset($_SESSION['debug']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,6 +63,33 @@
         .logo p {
             color: #666;
             font-size: 14px;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-debug {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            font-size: 12px;
+            white-space: pre-wrap;
         }
         
         .form-group {
@@ -163,29 +209,33 @@
             text-decoration: underline;
         }
         
-        .language-selector {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .language-selector select {
-            padding: 8px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        
-        .wireframe-note {
+        .demo-credentials {
             background: #fff3cd;
             border: 2px solid #ffc107;
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;
-            text-align: center;
             font-size: 13px;
+        }
+        
+        .demo-credentials strong {
             color: #856404;
+        }
+        
+        .test-button {
+            width: 100%;
+            padding: 10px;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        .test-button:hover {
+            background: #138496;
         }
         
         @media (max-width: 480px) {
@@ -206,10 +256,29 @@
             <p>Sistema de Gestión Hotelera</p>
         </div>
         
-        <form method="POST" action="../../controllers/UsuarioController.php">
+        <?php if ($debug): ?>
+            <div class="alert alert-debug">
+                🔍 Debug Info:
+                <?php echo htmlspecialchars($debug); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if ($error): ?>
+            <div class="alert alert-error">
+                ⚠️ <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if ($success): ?>
+            <div class="alert alert-success">
+                ✓ <?php echo htmlspecialchars($success); ?>
+            </div>
+        <?php endif; ?>
+        
+        <form method="POST" action="/hotel-system/controllers/UsuarioController.php?action=login">
             <div class="form-group">
-                <label for="username">Usuario o Email</label>
-                <input type="text" id="username" name="username" placeholder="Ingrese su usuario o email" required>
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required autofocus>
             </div>
             
             <div class="form-group">
@@ -222,43 +291,27 @@
                     <input type="checkbox" name="remember">
                     Recordarme
                 </label>
-                <a href="#" onclick="alert('Funcionalidad de recuperación de contraseña'); return false;">¿Olvidaste tu contraseña?</a>
+                <a href="#">¿Olvidaste tu contraseña?</a>
             </div>
             
             <button type="submit" class="btn-login">Iniciar Sesión</button>
         </form>
         
+        <button class="test-button" onclick="window.location.href='../../test-conexion.php'">
+            🔧 Ejecutar Test de Diagnóstico
+        </button>
+        
         <div class="divider">o</div>
         
         <div class="register-link">
-            ¿No tienes cuenta? <a href="#" onclick="alert('Redirigir a formulario de registro'); return false;">Regístrate aquí</a>
+            ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
         </div>
         
-        <div class="language-selector">
-            <select onchange="alert('Cambiar idioma a: ' + this.value)">
-                <option value="es">🇩🇴 Español</option>
-                <option value="en">🇺🇸 English</option>
-            </select>
-        </div>
-        
-        <div class="wireframe-note">
-            📋 <strong>Wireframe - Pantalla de Login</strong><br>
-            Este es un prototipo interactivo básico del sistema de autenticación.
+        <div class="demo-credentials">
+            <strong>🔑 Credenciales de Prueba:</strong><br>
+            Usuario: <code>admin</code><br>
+            Contraseña: <code>password</code>
         </div>
     </div>
-    
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (username && password) {
-                alert('¡Login exitoso!\\n\\nUsuario: ' + username + '\\n\\nEn la aplicación real, aquí se validarían las credenciales y se redirigiría al dashboard correspondiente según el rol del usuario.');
-            } else {
-                alert('Por favor, complete todos los campos.');
-            }
-        });
-    </script>
 </body>
 </html>
