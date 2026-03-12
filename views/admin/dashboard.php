@@ -1,6 +1,17 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../models/Habitacion.php';
+ 
+$database = new Database();
+$db = $database->getConnection();
+$hab = new Habitacion($db);
+ 
+$total_hab     = $hab->leerTodas()->rowCount();
+$disponibles   = $hab->leerTodas('', 'disponible')->rowCount();
+$ocupadas      = $hab->leerTodas('', 'ocupada')->rowCount();
+
 // Verificar que haya sesión activa
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
@@ -281,7 +292,7 @@ $username = $_SESSION['username'];
             <span class="menu-icon">📊</span>
             <span>Dashboard</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
             <span class="menu-icon">🛏️</span>
             <span>Habitaciones</span>
         </a>
@@ -348,7 +359,7 @@ $username = $_SESSION['username'];
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">🛏️</div>
-                    <div class="stat-value">25</div>
+                    <div class="stat-value"><?= $total_hab ?></div>
                     <div class="stat-label">Total Habitaciones</div>
                 </div>
                 <div class="stat-card">
@@ -363,7 +374,7 @@ $username = $_SESSION['username'];
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">💰</div>
-                    <div class="stat-value">72%</div>
+                    <div class="stat-value"><?= $total_hab > 0 ? round(($ocupadas / $total_hab) * 100) : 0 ?>%</div>
                     <div class="stat-label">Ocupación Actual</div>
                 </div>
             </div>
@@ -376,7 +387,7 @@ $username = $_SESSION['username'];
                         <div class="action-icon">➕</div>
                         <div>Nueva Reserva</div>
                     </a>
-                    <a href="#" class="action-btn">
+                    <a href="/hotel-system/controllers/HabitacionController.php" class="action-btn">
                         <div class="action-icon">🛏️</div>
                         <div>Gestionar Habitaciones</div>
                     </a>
