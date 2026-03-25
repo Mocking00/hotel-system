@@ -8,6 +8,9 @@ $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
 $es_recepcion = $rol === 'recepcionista';
+$dashboard_url = $es_recepcion
+    ? '/hotel-system/views/recepcionista/dashboard.php'
+    : '/hotel-system/views/admin/dashboard.php';
 
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
@@ -151,7 +154,7 @@ $badge = [
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">
+    <a href="<?= $dashboard_url ?>" class="menu-item">
         <span>📊 Dashboard</span>
     </a>
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
@@ -163,9 +166,11 @@ $badge = [
     <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">
         <span>👥 Clientes</span>
     </a>
+    <?php if (!$es_recepcion): ?>
     <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">
         <span>📈 Reportes</span>
     </a>
+    <?php endif; ?>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
         <span>🚪 Cerrar Sesion</span>
     </a>
@@ -197,7 +202,7 @@ $badge = [
 
         <div class="toolbar">
             <h2>Reservas registradas</h2>
-            <?php if (!$es_recepcion): ?>
+            <?php if (!$es_cliente): ?>
             <a href="/hotel-system/controllers/ReservaController.php?accion=crear" class="btn-primary">➕ Nueva Reserva</a>
             <?php endif; ?>
         </div>

@@ -7,6 +7,10 @@ if (!isset($_SESSION['usuario_id'])) {
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
+$es_recepcion = $rol === 'recepcionista';
+$dashboard_url = $es_recepcion
+    ? '/hotel-system/views/recepcionista/dashboard.php'
+    : '/hotel-system/views/admin/dashboard.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -135,11 +139,13 @@ $es_cliente = $rol === 'cliente';
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">📊 Dashboard</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
     <a href="/hotel-system/controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
     <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
+    <?php if (!$es_recepcion): ?>
     <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <?php endif; ?>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
 </div>
 <?php else: ?>

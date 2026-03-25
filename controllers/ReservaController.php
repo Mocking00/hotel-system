@@ -20,8 +20,8 @@ $reserva  = new Reserva($db);
 
 $accion = $_GET['accion'] ?? 'listar';
 
-if ($_SESSION['rol'] === 'recepcionista' && !in_array($accion, ['listar', 'detalle', 'checkin', 'checkout'])) {
-    $_SESSION['mensaje'] = 'Recepcion solo puede listar reservas y confirmar CI/CO.';
+if ($_SESSION['rol'] === 'recepcionista' && !in_array($accion, ['listar', 'crear', 'detalle', 'checkin', 'checkout'])) {
+    $_SESSION['mensaje'] = 'Recepcion solo puede listar, crear reservas y confirmar CI/CO.';
     $_SESSION['tipo_msg'] = 'error';
     header('Location: /hotel-system/controllers/ReservaController.php');
     exit;
@@ -91,6 +91,7 @@ function accion_listar($reserva) {
 function accion_crear($reserva) {
     $errores = [];
     $es_cliente = $_SESSION['rol'] === 'cliente';
+    $habitacion_preseleccionada = trim($_GET['hab'] ?? '');
 
     $datos = [
         'cliente_id'       => '',
@@ -112,6 +113,10 @@ function accion_crear($reserva) {
 
     if ($es_cliente) {
         $datos['cliente_id'] = (string) $cliente_actual_id;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' && ctype_digit($habitacion_preseleccionada)) {
+        $datos['habitacion_id'] = $habitacion_preseleccionada;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
