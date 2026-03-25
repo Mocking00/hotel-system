@@ -96,10 +96,23 @@ class UsuarioController {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
             $password_confirm = $_POST['password_confirm'] ?? '';
+            $nombre = trim($_POST['nombre'] ?? '');
+            $apellido = trim($_POST['apellido'] ?? '');
+            $cedula = trim($_POST['cedula'] ?? '');
+            $telefono = trim($_POST['telefono'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $direccion = trim($_POST['direccion'] ?? '');
+            $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
             
             // Validaciones
-            if (empty($username) || empty($password) || empty($password_confirm)) {
+            if (empty($username) || empty($password) || empty($password_confirm) || empty($nombre) || empty($apellido) || empty($cedula) || empty($telefono) || empty($email)) {
                 $_SESSION['error'] = "Todos los campos son obligatorios";
+                header("Location: /hotel-system/views/auth/registro.php");
+                exit();
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $_SESSION['error'] = "El email no es válido";
                 header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }
@@ -124,18 +137,62 @@ class UsuarioController {
                 exit();
             }
             
-            // Crear usuario
-            $this->usuario->username = $username;
-            $this->usuario->password = $password;
-            $this->usuario->rol = 'cliente';
-            $this->usuario->activo = 1;
-            
-            if ($this->usuario->crear()) {
-                $_SESSION['success'] = "Registro exitoso. Por favor inicia sesión.";
+            try {
+                $this->db->beginTransaction();
+
+                // Crear usuario
+                $this->usuario->username = $username;
+                $this->usuario->password = $password;
+                $this->usuario->rol = 'cliente';
+                $this->usuario->activo = 1;
+
+                if (!$this->usuario->crear()) {
+                    throw new Exception("Error al crear el usuario.");
+                }
+
+                // Validar cédula y email únicos en CLIENTE
+                $stmt = $this->db->prepare("SELECT cliente_id FROM CLIENTE WHERE cedula = :cedula OR email = :email LIMIT 1");
+                $stmt->bindParam(':cedula', $cedula);
+                $stmt->bindParam(':email', $email);
+                $stmt->execute();
+                if ($stmt->fetch(PDO::FETCH_ASSOC)) {
+                    throw new Exception("Ya existe un cliente registrado con esa cédula o email.");
+                }
+
+                // Crear perfil cliente vinculado
+                $stmt = $this->db->prepare(
+                    "INSERT INTO CLIENTE (usuario_id, nombre, apellido, cedula, telefono, email, direccion, fecha_nacimiento)
+                     VALUES (:usuario_id, :nombre, :apellido, :cedula, :telefono, :email, :direccion, :fecha_nacimiento)"
+                );
+
+                $usuario_id = $this->usuario->usuario_id;
+                $fecha_nac = !empty($fecha_nacimiento) ? $fecha_nacimiento : null;
+                $dir = !empty($direccion) ? $direccion : null;
+
+                $stmt->bindParam(':usuario_id', $usuario_id);
+                $stmt->bindParam(':nombre', $nombre);
+                $stmt->bindParam(':apellido', $apellido);
+                $stmt->bindParam(':cedula', $cedula);
+                $stmt->bindParam(':telefono', $telefono);
+                $stmt->bindParam(':email', $email);
+                $stmt->bindParam(':direccion', $dir);
+                $stmt->bindParam(':fecha_nacimiento', $fecha_nac);
+
+                if (!$stmt->execute()) {
+                    throw new Exception("Error al crear el perfil de cliente.");
+                }
+
+                $this->db->commit();
+
+                $_SESSION['success'] = "Cuenta creada correctamente. Ya puedes iniciar sesión y hacer tu pre-reserva.";
                 header("Location: /hotel-system/views/auth/login.php");
                 exit();
-            } else {
-                $_SESSION['error'] = "Error al crear el usuario. Intente nuevamente.";
+
+            } catch (Exception $e) {
+                if ($this->db->inTransaction()) {
+                    $this->db->rollBack();
+                }
+                $_SESSION['error'] = $e->getMessage();
                 header("Location: /hotel-system/views/auth/registro.php");
                 exit();
             }

@@ -22,6 +22,13 @@ $hab      = new Habitacion($db);
 // ── Router ───────────────────────────────────────────────────────────────
 $accion = $_GET['accion'] ?? 'listar';
 
+if ($_SESSION['rol'] === 'recepcionista' && $accion !== 'listar') {
+    $_SESSION['mensaje']  = 'No tienes permisos para modificar habitaciones.';
+    $_SESSION['tipo_msg'] = 'error';
+    header('Location: /hotel-system/controllers/HabitacionController.php');
+    exit;
+}
+
 switch ($accion) {
     case 'crear':    accion_crear($hab);    break;
     case 'editar':   accion_editar($hab);   break;

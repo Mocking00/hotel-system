@@ -5,6 +5,8 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 $username = $_SESSION['username'];
+$rol = $_SESSION['rol'];
+$solo_lectura = $rol === 'recepcionista';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -157,10 +159,9 @@ $username = $_SESSION['username'];
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="#" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">👥</span><span>Usuarios</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">⭐</span><span>Servicios</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
+    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
         <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
     </a>
@@ -194,9 +195,11 @@ $username = $_SESSION['username'];
 
         <div class="toolbar">
             <h2>Habitaciones registradas</h2>
+            <?php if (!$solo_lectura): ?>
             <a href="/hotel-system/controllers/HabitacionController.php?accion=crear" class="btn-primary">
                 ➕ Nueva Habitación
             </a>
+            <?php endif; ?>
         </div>
 
         <form method="GET" action="/hotel-system/controllers/HabitacionController.php">
@@ -267,10 +270,13 @@ $username = $_SESSION['username'];
                         </td>
                         <td style="text-align:center;white-space:nowrap;">
 
-                            <a href="/hotel-system/controllers/HabitacionController.php?accion=editar&id=<?= $h['habitacion_id'] ?>"
-                               class="btn-edit">✏️ Editar</a>
+                                     <?php if (!$solo_lectura): ?>
+                                     <a href="/hotel-system/controllers/HabitacionController.php?accion=editar&id=<?= $h['habitacion_id'] ?>"
+                                         class="btn-edit">✏️ Editar</a>
+                                     <?php endif; ?>
 
-                            <div class="dropdown" style="display:inline-block;margin:0 4px;">
+                                     <?php if (!$solo_lectura): ?>
+                                     <div class="dropdown" style="display:inline-block;margin:0 4px;">
                                 <button class="btn-status">🔄 Estado ▾</button>
                                 <div class="dropdown-menu">
                                     <div class="dropdown-header">Cambiar a:</div>
@@ -282,6 +288,7 @@ $username = $_SESSION['username'];
                                     <?php endforeach; ?>
                                 </div>
                             </div>
+                            <?php endif; ?>
 
                             <?php if ($_SESSION['rol'] === 'administrador'): ?>
                             <a href="/hotel-system/controllers/HabitacionController.php?accion=eliminar&id=<?= $h['habitacion_id'] ?>"

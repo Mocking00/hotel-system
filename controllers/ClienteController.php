@@ -6,7 +6,7 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: /hotel-system/views/auth/login.php");
     exit();
 }
-if ($_SESSION['rol'] !== 'administrador') {
+if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
     header("Location: /hotel-system/views/auth/login.php");
     exit();
 }
@@ -14,6 +14,7 @@ if ($_SESSION['rol'] !== 'administrador') {
 // ── Dependencias ─────────────────────────────────────────────────────────
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Cliente.php';
+require_once __DIR__ . '/../models/Usuario.php';
 
 $database = new Database();
 $db       = $database->getConnection();
@@ -27,6 +28,8 @@ switch ($accion) {
     case 'editar':  accion_editar($db, $cliente);  break;
     case 'detalle': accion_detalle($cliente);       break;
     case 'eliminar':accion_eliminar($cliente);      break;
+    case 'crear_usuario': accion_crear_usuario($db, $cliente); break;
+    case 'crear_usuario_nuevo': accion_crear_usuario_nuevo($db, $cliente); break;
     case 'api_buscar': api_buscar($cliente);        break;
     default: accion_listar($cliente);               break;
 }
@@ -50,6 +53,13 @@ function accion_listar($cliente) {
 // CREAR
 // ════════════════════════════════════════════════════════════════════════
 function accion_crear($db, $cliente) {
+    if ($_SESSION['rol'] !== 'administrador') {
+        $_SESSION['mensaje']  = 'No tienes permisos para crear clientes.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
     $errores = [];
     $datos   = [
         'nombre'          => '',
@@ -114,6 +124,13 @@ function accion_crear($db, $cliente) {
 // EDITAR
 // ════════════════════════════════════════════════════════════════════════
 function accion_editar($db, $cliente) {
+    if ($_SESSION['rol'] !== 'administrador') {
+        $_SESSION['mensaje']  = 'No tienes permisos para editar clientes.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
         header('Location: /hotel-system/controllers/ClienteController.php');
@@ -209,6 +226,13 @@ function accion_detalle($cliente) {
 // ELIMINAR
 // ════════════════════════════════════════════════════════════════════════
 function accion_eliminar($cliente) {
+    if ($_SESSION['rol'] !== 'administrador') {
+        $_SESSION['mensaje']  = 'No tienes permisos para eliminar clientes.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
     $id = intval($_GET['id'] ?? 0);
     if ($id) {
         $cliente->cliente_id = $id;
@@ -233,5 +257,184 @@ function api_buscar($cliente) {
     if (strlen($termino) < 2) { echo json_encode([]); exit; }
     echo json_encode($cliente->buscar($termino));
     exit;
+}
+
+function accion_crear_usuario($db, $cliente) {
+    $cliente_id = intval($_GET['id'] ?? 0);
+    if (!$cliente_id) {
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
+    $cliente->cliente_id = $cliente_id;
+    $datos_cliente = $cliente->leerPorId();
+    if (!$datos_cliente) {
+        $_SESSION['mensaje'] = 'Cliente no encontrado.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
+    if (!empty($datos_cliente['usuario_id']) || !empty($datos_cliente['username'])) {
+        $_SESSION['mensaje'] = 'Este cliente ya tiene un usuario asociado.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente_id);
+        exit;
+    }
+
+    $errores = [];
+    $datos = [
+        'username' => '',
+        'password' => '',
+        'password_confirm' => '',
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $datos['username'] = trim($_POST['username'] ?? '');
+        $datos['password'] = trim($_POST['password'] ?? '');
+        $datos['password_confirm'] = trim($_POST['password_confirm'] ?? '');
+
+        if (empty($datos['username'])) $errores[] = 'El username es obligatorio.';
+        if (strlen($datos['password']) < 6) $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
+        if ($datos['password'] !== $datos['password_confirm']) $errores[] = 'Las contraseñas no coinciden.';
+
+        $usuario = new Usuario($db);
+        $usuario->username = $datos['username'];
+        if (empty($errores) && $usuario->existeUsername()) {
+            $errores[] = 'El username ya está en uso.';
+        }
+
+        if (empty($errores)) {
+            try {
+                $db->beginTransaction();
+
+                $usuario->password = $datos['password'];
+                $usuario->rol      = 'cliente';
+                $usuario->activo   = 1;
+
+                if (!$usuario->crear()) {
+                    throw new Exception('No se pudo crear el usuario.');
+                }
+
+                $stmt = $db->prepare("UPDATE CLIENTE SET usuario_id = :usuario_id WHERE cliente_id = :cliente_id");
+                $stmt->bindParam(':usuario_id', $usuario->usuario_id);
+                $stmt->bindParam(':cliente_id', $cliente_id);
+                if (!$stmt->execute()) {
+                    throw new Exception('No se pudo vincular el usuario al cliente.');
+                }
+
+                $db->commit();
+
+                $_SESSION['mensaje'] = 'Usuario creado y vinculado correctamente al cliente.';
+                $_SESSION['tipo_msg'] = 'success';
+                header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente_id);
+                exit;
+            } catch (Exception $e) {
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
+                $errores[] = 'Error al crear usuario asistido: ' . $e->getMessage();
+            }
+        }
+    }
+
+    include __DIR__ . '/../views/clientes/crear_usuario.php';
+}
+
+function accion_crear_usuario_nuevo($db, $cliente) {
+    if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
+        $_SESSION['mensaje'] = 'No tienes permisos para crear usuarios cliente.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: /hotel-system/controllers/ClienteController.php');
+        exit;
+    }
+
+    $errores = [];
+    $datos = [
+        'nombre'           => '',
+        'apellido'         => '',
+        'cedula'           => '',
+        'telefono'         => '',
+        'email'            => '',
+        'direccion'        => '',
+        'fecha_nacimiento' => '',
+        'username'         => '',
+        'password'         => '',
+        'password_confirm' => '',
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        foreach (array_keys($datos) as $campo) {
+            $datos[$campo] = trim($_POST[$campo] ?? '');
+        }
+
+        if (empty($datos['nombre'])) $errores[] = 'El nombre es obligatorio.';
+        if (empty($datos['apellido'])) $errores[] = 'El apellido es obligatorio.';
+        if (empty($datos['cedula'])) $errores[] = 'La cédula es obligatoria.';
+        if (empty($datos['telefono'])) $errores[] = 'El teléfono es obligatorio.';
+        if (empty($datos['email'])) $errores[] = 'El email es obligatorio.';
+        if (!empty($datos['email']) && !filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
+            $errores[] = 'El formato del email no es válido.';
+        }
+        if (empty($datos['username'])) $errores[] = 'El username es obligatorio.';
+        if (strlen($datos['password']) < 6) $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
+        if ($datos['password'] !== $datos['password_confirm']) $errores[] = 'Las contraseñas no coinciden.';
+
+        $usuario = new Usuario($db);
+        $usuario->username = $datos['username'];
+        if (empty($errores) && $usuario->existeUsername()) {
+            $errores[] = 'El username ya está en uso.';
+        }
+
+        if (empty($errores)) {
+            $cliente->cedula = $datos['cedula'];
+            if ($cliente->cedulaExiste()) $errores[] = 'Ya existe un cliente con esa cédula.';
+        }
+        if (empty($errores)) {
+            $cliente->email = $datos['email'];
+            if ($cliente->emailExiste()) $errores[] = 'Ya existe un cliente con ese email.';
+        }
+
+        if (empty($errores)) {
+            try {
+                $db->beginTransaction();
+
+                $usuario->password = $datos['password'];
+                $usuario->rol      = 'cliente';
+                $usuario->activo   = 1;
+
+                if (!$usuario->crear()) {
+                    throw new Exception('No se pudo crear el usuario.');
+                }
+
+                $cliente->usuario_id       = $usuario->usuario_id;
+                $cliente->nombre           = $datos['nombre'];
+                $cliente->apellido         = $datos['apellido'];
+                $cliente->cedula           = $datos['cedula'];
+                $cliente->telefono         = $datos['telefono'];
+                $cliente->email            = $datos['email'];
+                $cliente->direccion        = $datos['direccion'];
+                $cliente->fecha_nacimiento = !empty($datos['fecha_nacimiento']) ? $datos['fecha_nacimiento'] : null;
+
+                if (!$cliente->crear()) {
+                    throw new Exception('No se pudo crear el perfil del cliente.');
+                }
+
+                $db->commit();
+
+                $_SESSION['mensaje'] = 'Usuario cliente creado correctamente.';
+                $_SESSION['tipo_msg'] = 'success';
+                header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente->cliente_id);
+                exit;
+            } catch (Exception $e) {
+                if ($db->inTransaction()) {
+                    $db->rollBack();
+                }
+                $errores[] = 'Error al crear usuario cliente: ' . $e->getMessage();
+            }
+        }
+    }
+
+    include __DIR__ . '/../views/clientes/crear_usuario_nuevo.php';
 }
 ?>

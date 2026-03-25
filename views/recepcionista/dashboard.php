@@ -29,10 +29,10 @@ $hab_ocupadas = $stmt->fetchColumn();
 $stmt = $db->query("SELECT COUNT(*) FROM RESERVA WHERE estado IN ('pendiente','confirmada')");
 $reservas_activas = $stmt->fetchColumn();
 
-$stmt = $db->query("SELECT COUNT(*) FROM RESERVA WHERE DATE(fecha_entrada) = CURDATE() AND estado IN ('pendiente','confirmada')");
+$stmt = $db->query("SELECT COUNT(*) FROM RESERVA WHERE DATE(fecha_checkin) = CURDATE()");
 $checkins_hoy = $stmt->fetchColumn();
 
-$stmt = $db->query("SELECT COUNT(*) FROM RESERVA WHERE DATE(fecha_salida) = CURDATE() AND estado = 'confirmada' AND fecha_checkin IS NOT NULL");
+$stmt = $db->query("SELECT COUNT(*) FROM RESERVA WHERE DATE(fecha_checkout) = CURDATE()");
 $checkouts_hoy = $stmt->fetchColumn();
 
 // ── Reservas recientes ────────────────────────────────────────────────────
@@ -166,9 +166,6 @@ $badge = [
     <div class="menu-section">Gestión</div>
     <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">
         <span class="menu-icon">📅</span><span>Reservas</span>
-    </a>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=crear" class="menu-item">
-        <span class="menu-icon">➕</span><span>Nueva Reserva</span>
     </a>
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
@@ -327,21 +324,21 @@ $badge = [
                 </div>
 
                 <!-- Acceso rápido -->
-                <div class="section-title" style="margin-bottom:12px">⚡ Acciones Rápidas</div>
+                <div class="section-title" style="margin-bottom:12px">⚡ Acciones de Recepción</div>
                 <div class="card" style="padding:12px">
-                    <a href="/hotel-system/controllers/ReservaController.php?accion=crear"
+                    <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333;margin-bottom:4px"
                        onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
-                        <span style="font-size:20px">➕</span>
-                        <div><div style="font-weight:600;font-size:13px">Nueva Reserva</div>
-                        <div style="font-size:11px;color:#888">Registrar walk-in</div></div>
+                        <span style="font-size:20px">🔐</span>
+                        <div><div style="font-weight:600;font-size:13px">Crear Usuario Cliente</div>
+                        <div style="font-size:11px;color:#888">Alta directa de cliente con credenciales</div></div>
                     </a>
-                    <a href="/hotel-system/controllers/HabitacionController.php"
+                    <a href="/hotel-system/controllers/ReservaController.php"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333"
                        onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
-                        <span style="font-size:20px">🛏️</span>
-                        <div><div style="font-weight:600;font-size:13px">Ver Habitaciones</div>
-                        <div style="font-size:11px;color:#888">Estado del inventario</div></div>
+                        <span style="font-size:20px">✅</span>
+                        <div><div style="font-weight:600;font-size:13px">Confirmar CI/CO</div>
+                        <div style="font-size:11px;color:#888">Gestión operativa de llegadas/salidas</div></div>
                     </a>
                 </div>
             </div>

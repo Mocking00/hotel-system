@@ -123,10 +123,9 @@ $username = $_SESSION['username'];
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="#" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">👥</span><span>Usuarios</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">⭐</span><span>Servicios</span></a>
-    <a href="#" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
+    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
         <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
     </a>

@@ -1,5 +1,10 @@
 <?php if (!isset($_SESSION['usuario_id'])) { header("Location: /hotel-system/views/auth/login.php"); exit(); }
-$username = $_SESSION['username']; ?>
+$username = $_SESSION['username'];
+$rol = $_SESSION['rol'];
+$es_admin = $rol === 'administrador';
+$es_recepcion = $rol === 'recepcionista';
+$dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel-system/views/recepcionista/dashboard.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -58,13 +63,15 @@ $username = $_SESSION['username']; ?>
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de Administración</div>
+        <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
     <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
     <a href="/hotel-system/controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
-    <a href="#" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <?php if ($es_admin): ?>
+    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <?php endif; ?>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
 </div>
 
@@ -78,7 +85,7 @@ $username = $_SESSION['username']; ?>
             <div class="user-avatar"><?= strtoupper(substr($username,0,2)) ?></div>
             <div>
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
-                <div style="font-size:12px;color:#666">Administrador</div>
+                <div style="font-size:12px;color:#666"><?= ucfirst(htmlspecialchars($rol)) ?></div>
             </div>
             <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
@@ -91,7 +98,11 @@ $username = $_SESSION['username']; ?>
 
         <div class="toolbar">
             <h2>Clientes registrados</h2>
+            <?php if ($es_admin): ?>
             <a href="/hotel-system/controllers/ClienteController.php?accion=crear" class="btn-primary">➕ Nuevo Cliente</a>
+            <?php elseif ($es_recepcion): ?>
+            <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-primary">🔐 Nuevo Usuario Cliente</a>
+            <?php endif; ?>
         </div>
 
         <!-- Buscador -->
@@ -149,11 +160,18 @@ $username = $_SESSION['username']; ?>
                         </td>
                         <td style="color:#888;font-size:12px"><?= date('d/m/Y', strtotime($c['fecha_registro'])) ?></td>
                         <td style="text-align:center;white-space:nowrap">
-                            <a href="/hotel-system/controllers/ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
-                            <a href="/hotel-system/controllers/ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
-                            <a href="/hotel-system/controllers/ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
-                               class="btn-sm btn-del"
-                               onclick="return confirm('¿Eliminar a <?= htmlspecialchars($c['nombre'].' '.$c['apellido']) ?>? Esta acción no se puede deshacer.')">🗑</a>
+                                     <a href="/hotel-system/controllers/ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
+
+                                     <?php if ($es_admin): ?>
+                                     <a href="/hotel-system/controllers/ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
+                                     <a href="/hotel-system/controllers/ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
+                                         class="btn-sm btn-del"
+                                         onclick="return confirm('¿Eliminar a <?= htmlspecialchars($c['nombre'].' '.$c['apellido']) ?>? Esta acción no se puede deshacer.')">🗑</a>
+                                     <?php endif; ?>
+
+                                     <?php if ($es_recepcion && empty($c['username'])): ?>
+                                     <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">🔐 Usuario</a>
+                                     <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

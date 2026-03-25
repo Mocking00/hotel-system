@@ -1,5 +1,9 @@
 <?php if (!isset($_SESSION['usuario_id'])) { header("Location: /hotel-system/views/auth/login.php"); exit(); }
 $username = $_SESSION['username'];
+$rol = $_SESSION['rol'];
+$es_admin = $rol === 'administrador';
+$es_recepcion = $rol === 'recepcionista';
+$dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel-system/views/recepcionista/dashboard.php';
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
     'confirmada' => ['bg'=>'#d4edda','color'=>'#155724', 'icon'=>'✅'],
@@ -76,13 +80,15 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div style="font-size:13px;opacity:.8">Panel de Administración</div>
+        <div style="font-size:13px;opacity:.8">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
     <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
     <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
     <a href="/hotel-system/controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
-    <a href="#" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <?php if ($es_admin): ?>
+    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <?php endif; ?>
     <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
 </div>
 
@@ -96,7 +102,7 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
             <div class="user-avatar"><?= strtoupper(substr($username,0,2)) ?></div>
             <div>
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
-                <div style="font-size:12px;color:#666">Administrador</div>
+                <div style="font-size:12px;color:#666"><?= ucfirst(htmlspecialchars($rol)) ?></div>
             </div>
             <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
@@ -227,11 +233,21 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
                     <div class="card-header">⚡ Acciones</div>
                     <div class="card-body">
                         <div class="action-btns">
+                            <?php if ($es_admin): ?>
                             <a href="/hotel-system/controllers/ClienteController.php?accion=editar&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-edit">✏️ Editar Cliente</a>
-                            <a href="/hotel-system/controllers/ReservaController.php?accion=crear&cliente_id=<?= $datos['cliente_id'] ?>" class="btn-action btn-reserva">📅 Nueva Reserva</a>
                             <a href="/hotel-system/controllers/ClienteController.php?accion=eliminar&id=<?= $datos['cliente_id'] ?>"
                                class="btn-action btn-del"
                                onclick="return confirm('¿Eliminar cliente? No se puede deshacer.')">🗑️ Eliminar</a>
+                            <?php endif; ?>
+
+                            <?php if ($es_recepcion && empty($datos['username'])): ?>
+                            <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-reserva">🔐 Crear Usuario Cliente</a>
+                            <?php endif; ?>
+
+                            <?php if ($es_recepcion): ?>
+                            <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-action btn-reserva">➕ Nuevo Usuario Cliente</a>
+                            <?php endif; ?>
+
                             <a href="/hotel-system/controllers/ClienteController.php" class="btn-action btn-back">← Volver al listado</a>
                         </div>
                     </div>
