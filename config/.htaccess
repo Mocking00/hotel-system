@@ -1,0 +1,4 @@
+# Prevent direct web access to PHP files in this folder
+<Files *.php>
+    Deny from all
+</Files>

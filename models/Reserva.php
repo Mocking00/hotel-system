@@ -12,9 +12,15 @@ class Reserva {
     public $precio_total;
     public $estado;
     public $notas_especiales;
+    public $codigo_confirmacion;
 
     public function __construct($db) {
         $this->conn = $db;
+    }
+
+    private function generarCodigoConfirmacion() {
+        // Longitud <= 20 para coincidir con la columna VARCHAR(20)
+        return 'RES' . date('ymdHis') . str_pad((string) random_int(0, 999), 3, '0', STR_PAD_LEFT);
     }
 
     public function leerTodas($filtros = [], $solo_cliente_id = null) {
@@ -113,15 +119,16 @@ class Reserva {
 
     public function crear() {
         $query = "INSERT INTO " . $this->table . "
-                    (cliente_id, habitacion_id, fecha_entrada, fecha_salida,
-                     numero_personas, precio_total, estado, notas_especiales)
+                                        (cliente_id, habitacion_id, fecha_entrada, fecha_salida,
+                                         numero_personas, precio_total, estado, codigo_confirmacion, notas_especiales)
                   VALUES
                     (:cliente_id, :habitacion_id, :fecha_entrada, :fecha_salida,
-                     :numero_personas, :precio_total, :estado, :notas_especiales)";
+                                         :numero_personas, :precio_total, :estado, :codigo_confirmacion, :notas_especiales)";
 
         $stmt = $this->conn->prepare($query);
 
         $estado = !empty($this->estado) ? $this->estado : 'pendiente';
+        $codigo = !empty($this->codigo_confirmacion) ? $this->codigo_confirmacion : $this->generarCodigoConfirmacion();
         $notas  = !empty($this->notas_especiales) ? $this->notas_especiales : null;
 
         $stmt->bindParam(':cliente_id', $this->cliente_id);
@@ -131,6 +138,7 @@ class Reserva {
         $stmt->bindParam(':numero_personas', $this->numero_personas);
         $stmt->bindParam(':precio_total', $this->precio_total);
         $stmt->bindParam(':estado', $estado);
+        $stmt->bindValue(':codigo_confirmacion', $codigo);
         $stmt->bindParam(':notas_especiales', $notas);
 
         if ($stmt->execute()) {
@@ -291,11 +299,22 @@ class Reserva {
     }
 
     public function obtenerReporteReservas($filtros = []) {
-        $query = "SELECT reserva_id, codigo_confirmacion, fecha_entrada, fecha_salida,
-                         precio_total, estado, nombre_cliente, email, telefono,
-                         numero_habitacion, tipo_habitacion, noches
-                  FROM v_reservas_completas
-                  WHERE 1=1";
+         $query = "SELECT r.reserva_id,
+                    r.codigo_confirmacion,
+                    r.fecha_entrada,
+                    r.fecha_salida,
+                    r.precio_total,
+                    r.estado,
+                    CONCAT(c.nombre, ' ', c.apellido) AS nombre_cliente,
+                    c.email,
+                    c.telefono,
+                    h.numero AS numero_habitacion,
+                    h.tipo AS tipo_habitacion,
+                    DATEDIFF(r.fecha_salida, r.fecha_entrada) AS noches
+                FROM RESERVA r
+                JOIN CLIENTE c ON r.cliente_id = c.cliente_id
+                JOIN HABITACION h ON r.habitacion_id = h.habitacion_id
+                WHERE 1=1";
 
         if (!empty($filtros['estado'])) {
             $query .= " AND estado = :estado";

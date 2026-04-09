@@ -3,11 +3,11 @@ session_start();
 
 // ── Protección: solo administrador ───────────────────────────────────────
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 
@@ -15,6 +15,7 @@ if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Cliente.php';
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../utils/Validator.php';
 
 $database = new Database();
 $db       = $database->getConnection();
@@ -56,7 +57,7 @@ function accion_crear($db, $cliente) {
     if ($_SESSION['rol'] !== 'administrador') {
         $_SESSION['mensaje']  = 'No tienes permisos para crear clientes.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -86,6 +87,21 @@ function accion_crear($db, $cliente) {
         if (!empty($datos['email']) && !filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El formato del email no es válido.';
         }
+        if (!empty($datos['nombre']) && !Validator::nombreValido($datos['nombre'])) {
+            $errores[] = 'El nombre solo puede contener letras y espacios.';
+        }
+        if (!empty($datos['apellido']) && !Validator::nombreValido($datos['apellido'])) {
+            $errores[] = 'El apellido solo puede contener letras y espacios.';
+        }
+        if (!empty($datos['cedula']) && !Validator::cedulaValida($datos['cedula'])) {
+            $errores[] = 'La cédula solo puede contener números y guiones.';
+        }
+        if (!empty($datos['telefono']) && !Validator::telefonoValido($datos['telefono'])) {
+            $errores[] = 'El teléfono solo puede contener números y caracteres de formato.';
+        }
+        if (!empty($datos['fecha_nacimiento']) && !Validator::esMayorDeEdad($datos['fecha_nacimiento'], 18)) {
+            $errores[] = 'La fecha de nacimiento indica que el cliente es menor de edad (18+ requerido).';
+        }
 
         if (empty($errores)) {
             $cliente->cedula = $datos['cedula'];
@@ -109,7 +125,7 @@ function accion_crear($db, $cliente) {
             if ($cliente->crear()) {
                 $_SESSION['mensaje']  = '✅ Cliente registrado correctamente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header('Location: /hotel-system/controllers/ClienteController.php');
+                header('Location: ./ClienteController.php');
                 exit;
             } else {
                 $errores[] = 'Error al guardar el cliente. Intenta de nuevo.';
@@ -127,13 +143,13 @@ function accion_editar($db, $cliente) {
     if ($_SESSION['rol'] !== 'administrador') {
         $_SESSION['mensaje']  = 'No tienes permisos para editar clientes.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -143,7 +159,7 @@ function accion_editar($db, $cliente) {
     $cliente->cliente_id = $id;
     $datos = $cliente->leerPorId();
     if (!$datos) {
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -161,6 +177,9 @@ function accion_editar($db, $cliente) {
         if (empty($datos['email']))    $errores[] = 'El email es obligatorio.';
         if (!empty($datos['email']) && !filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El formato del email no es válido.';
+        }
+        if (!empty($datos['fecha_nacimiento']) && !Validator::esMayorDeEdad($datos['fecha_nacimiento'], 18)) {
+            $errores[] = 'La fecha de nacimiento indica que el cliente es menor de edad (18+ requerido).';
         }
 
         if (empty($errores)) {
@@ -185,7 +204,7 @@ function accion_editar($db, $cliente) {
             if ($cliente->actualizar()) {
                 $_SESSION['mensaje']  = '✅ Cliente actualizado correctamente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header("Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=$id");
+                header("Location: ./ClienteController.php?accion=detalle&id=$id");
                 exit;
             } else {
                 $errores[] = 'Error al actualizar. Intenta de nuevo.';
@@ -202,14 +221,14 @@ function accion_editar($db, $cliente) {
 function accion_detalle($cliente) {
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
     $cliente->cliente_id = $id;
     $datos = $cliente->leerPorId();
     if (!$datos) {
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -229,7 +248,7 @@ function accion_eliminar($cliente) {
     if ($_SESSION['rol'] !== 'administrador') {
         $_SESSION['mensaje']  = 'No tienes permisos para eliminar clientes.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -244,7 +263,7 @@ function accion_eliminar($cliente) {
             $_SESSION['tipo_msg'] = 'error';
         }
     }
-    header('Location: /hotel-system/controllers/ClienteController.php');
+    header('Location: ./ClienteController.php');
     exit;
 }
 
@@ -262,7 +281,7 @@ function api_buscar($cliente) {
 function accion_crear_usuario($db, $cliente) {
     $cliente_id = intval($_GET['id'] ?? 0);
     if (!$cliente_id) {
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -271,29 +290,35 @@ function accion_crear_usuario($db, $cliente) {
     if (!$datos_cliente) {
         $_SESSION['mensaje'] = 'Cliente no encontrado.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
     if (!empty($datos_cliente['usuario_id']) || !empty($datos_cliente['username'])) {
         $_SESSION['mensaje'] = 'Este cliente ya tiene un usuario asociado.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente_id);
+        header('Location: ./ClienteController.php?accion=detalle&id=' . $cliente_id);
         exit;
     }
 
     $errores = [];
     $datos = [
+        'fecha_nacimiento' => !empty($datos_cliente['fecha_nacimiento']) ? $datos_cliente['fecha_nacimiento'] : '',
         'username' => '',
         'password' => '',
         'password_confirm' => '',
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $datos['fecha_nacimiento'] = trim($_POST['fecha_nacimiento'] ?? '');
         $datos['username'] = trim($_POST['username'] ?? '');
         $datos['password'] = trim($_POST['password'] ?? '');
         $datos['password_confirm'] = trim($_POST['password_confirm'] ?? '');
 
+        if (empty($datos['fecha_nacimiento'])) $errores[] = 'La fecha de nacimiento es obligatoria.';
+        if (!empty($datos['fecha_nacimiento']) && !Validator::esMayorDeEdad($datos['fecha_nacimiento'], 18)) {
+            $errores[] = 'El cliente debe ser mayor de edad (18+ años).';
+        }
         if (empty($datos['username'])) $errores[] = 'El username es obligatorio.';
         if (strlen($datos['password']) < 6) $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
         if ($datos['password'] !== $datos['password_confirm']) $errores[] = 'Las contraseñas no coinciden.';
@@ -316,6 +341,13 @@ function accion_crear_usuario($db, $cliente) {
                     throw new Exception('No se pudo crear el usuario.');
                 }
 
+                $stmtFecha = $db->prepare("UPDATE CLIENTE SET fecha_nacimiento = :fecha_nacimiento WHERE cliente_id = :cliente_id");
+                $stmtFecha->bindValue(':fecha_nacimiento', $datos['fecha_nacimiento']);
+                $stmtFecha->bindParam(':cliente_id', $cliente_id);
+                if (!$stmtFecha->execute()) {
+                    throw new Exception('No se pudo actualizar la fecha de nacimiento del cliente.');
+                }
+
                 $stmt = $db->prepare("UPDATE CLIENTE SET usuario_id = :usuario_id WHERE cliente_id = :cliente_id");
                 $stmt->bindParam(':usuario_id', $usuario->usuario_id);
                 $stmt->bindParam(':cliente_id', $cliente_id);
@@ -327,7 +359,7 @@ function accion_crear_usuario($db, $cliente) {
 
                 $_SESSION['mensaje'] = 'Usuario creado y vinculado correctamente al cliente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente_id);
+                header('Location: ./ClienteController.php?accion=detalle&id=' . $cliente_id);
                 exit;
             } catch (Exception $e) {
                 if ($db->inTransaction()) {
@@ -345,7 +377,7 @@ function accion_crear_usuario_nuevo($db, $cliente) {
     if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
         $_SESSION['mensaje'] = 'No tienes permisos para crear usuarios cliente.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ClienteController.php');
+        header('Location: ./ClienteController.php');
         exit;
     }
 
@@ -373,8 +405,24 @@ function accion_crear_usuario_nuevo($db, $cliente) {
         if (empty($datos['cedula'])) $errores[] = 'La cédula es obligatoria.';
         if (empty($datos['telefono'])) $errores[] = 'El teléfono es obligatorio.';
         if (empty($datos['email'])) $errores[] = 'El email es obligatorio.';
+        if (empty($datos['fecha_nacimiento'])) $errores[] = 'La fecha de nacimiento es obligatoria.';
         if (!empty($datos['email']) && !filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El formato del email no es válido.';
+        }
+        if (!empty($datos['nombre']) && !Validator::nombreValido($datos['nombre'])) {
+            $errores[] = 'El nombre solo puede contener letras y espacios.';
+        }
+        if (!empty($datos['apellido']) && !Validator::nombreValido($datos['apellido'])) {
+            $errores[] = 'El apellido solo puede contener letras y espacios.';
+        }
+        if (!empty($datos['cedula']) && !Validator::cedulaValida($datos['cedula'])) {
+            $errores[] = 'La cédula solo puede contener números y guiones.';
+        }
+        if (!empty($datos['telefono']) && !Validator::telefonoValido($datos['telefono'])) {
+            $errores[] = 'El teléfono solo puede contener números y caracteres de formato.';
+        }
+        if (!empty($datos['fecha_nacimiento']) && !Validator::esMayorDeEdad($datos['fecha_nacimiento'], 18)) {
+            $errores[] = 'El cliente debe ser mayor de edad (18+ años).';
         }
         if (empty($datos['username'])) $errores[] = 'El username es obligatorio.';
         if (strlen($datos['password']) < 6) $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
@@ -424,7 +472,7 @@ function accion_crear_usuario_nuevo($db, $cliente) {
 
                 $_SESSION['mensaje'] = 'Usuario cliente creado correctamente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header('Location: /hotel-system/controllers/ClienteController.php?accion=detalle&id=' . $cliente->cliente_id);
+                header('Location: ./ClienteController.php?accion=detalle&id=' . $cliente->cliente_id);
                 exit;
             } catch (Exception $e) {
                 if ($db->inTransaction()) {

@@ -1,12 +1,15 @@
 <?php
 // Acceso directo a la vista sin pasar por el controlador → redirigir
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $solo_lectura = $rol === 'recepcionista';
+$es_admin = $rol === 'administrador';
+$dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcionista/dashboard.php';
+$panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,10 +19,10 @@ $solo_lectura = $rol === 'recepcionista';
     <title>Habitaciones - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0; position: fixed; left: 0; top: 0;
         }
         .logo-section { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
@@ -30,7 +33,7 @@ $solo_lectura = $rol === 'recepcionista';
             display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
         }
-        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #3498db; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #1b98e0; }
         .menu-icon { font-size: 20px; width: 24px; }
 
         .main-content { margin-left: 260px; }
@@ -44,12 +47,12 @@ $solo_lectura = $rol === 'recepcionista';
         .user-section { display: flex; align-items: center; gap: 15px; }
         .user-info    { display: flex; align-items: center; gap: 10px; }
         .user-avatar {
-            width: 40px; height: 40px; background: #3498db; border-radius: 50%;
+            width: 40px; height: 40px; background: #1b98e0; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: bold;
         }
         .btn-logout {
-            padding: 8px 20px; background: #e74c3c; color: white;
+            padding: 8px 20px; background: #e76f51; color: white;
             border: none; border-radius: 8px; font-size: 14px; text-decoration: none;
         }
         .btn-logout:hover { background: #c0392b; }
@@ -67,11 +70,11 @@ $solo_lectura = $rol === 'recepcionista';
         .toolbar h2 { color: #333; font-size: 20px; }
 
         .btn-primary {
-            padding: 10px 22px; background: #3498db; color: white;
+            padding: 10px 22px; background: #1b98e0; color: white;
             border: none; border-radius: 8px; font-size: 14px;
             text-decoration: none; transition: all 0.3s;
         }
-        .btn-primary:hover { background: #2980b9; }
+        .btn-primary:hover { background: #1475ae; }
 
         .filters {
             background: white; padding: 15px 20px; border-radius: 10px;
@@ -86,7 +89,7 @@ $solo_lectura = $rol === 'recepcionista';
             border-radius: 6px; font-size: 13px; color: #333;
         }
         .btn-filter {
-            padding: 8px 18px; background: #667eea; color: white;
+            padding: 8px 18px; background: #1b98e0; color: white;
             border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
             text-decoration: none;
         }
@@ -101,7 +104,7 @@ $solo_lectura = $rol === 'recepcionista';
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden;
         }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #2c3e50; color: white; }
+        thead { background: #12355b; color: white; }
         thead th { padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; }
         tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.2s; }
         tbody tr:hover { background: #f8f9fa; }
@@ -139,7 +142,7 @@ $solo_lectura = $rol === 'recepcionista';
             display: block; padding: 8px 14px; font-size: 13px;
             color: #333; text-decoration: none;
         }
-        .dropdown-menu a:hover { background: #f0f7ff; }
+        .dropdown-menu a:hover { background: #eef7fb; }
         .dropdown-header { padding: 6px 14px; font-size: 11px; color: #888; font-weight: 600; border-bottom: 1px solid #eee; }
 
         .empty-state { text-align: center; padding: 60px; color: #aaa; }
@@ -151,18 +154,20 @@ $solo_lectura = $rol === 'recepcionista';
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de Administración</div>
+        <div class="role"><?= htmlspecialchars($panel_label) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">
+    <a href="<?= htmlspecialchars($dashboard_url) ?>" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item active">
+    <a href="../../controllers/HabitacionController.php" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
+    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="../../controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <?php if ($es_admin): ?>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
+    <?php endif; ?>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">
         <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
     </a>
 </div>
@@ -181,7 +186,7 @@ $solo_lectura = $rol === 'recepcionista';
                     <div style="font-size:12px;color:#666;"><?= ucfirst($_SESSION['rol']) ?></div>
                 </div>
             </div>
-            <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
@@ -196,13 +201,13 @@ $solo_lectura = $rol === 'recepcionista';
         <div class="toolbar">
             <h2>Habitaciones registradas</h2>
             <?php if (!$solo_lectura): ?>
-            <a href="/hotel-system/controllers/HabitacionController.php?accion=crear" class="btn-primary">
+            <a href="../../controllers/HabitacionController.php?accion=crear" class="btn-primary">
                 ➕ Nueva Habitación
             </a>
             <?php endif; ?>
         </div>
 
-        <form method="GET" action="/hotel-system/controllers/HabitacionController.php">
+        <form method="GET" action="../../controllers/HabitacionController.php">
             <input type="hidden" name="accion" value="listar">
             <div class="filters">
                 <div class="filter-group">
@@ -224,7 +229,7 @@ $solo_lectura = $rol === 'recepcionista';
                     </select>
                 </div>
                 <button type="submit" class="btn-filter">🔍 Filtrar</button>
-                <a href="/hotel-system/controllers/HabitacionController.php" class="btn-clear">✕ Limpiar</a>
+                <a href="../../controllers/HabitacionController.php" class="btn-clear">✕ Limpiar</a>
             </div>
         </form>
 
@@ -262,7 +267,7 @@ $solo_lectura = $rol === 'recepcionista';
                         <td><?= $iconos[$h['tipo']] ?? '🛏️' ?> <?= ucfirst($h['tipo']) ?></td>
                         <td><?= htmlspecialchars($h['piso']) ?>°</td>
                         <td>👤 <?= htmlspecialchars($h['capacidad']) ?> pers.</td>
-                        <td style="color:#27ae60;font-weight:600;">$<?= number_format($h['precio_noche'], 2) ?></td>
+                        <td style="color:#2a9d8f;font-weight:600;">$<?= number_format($h['precio_noche'], 2) ?></td>
                         <td>
                             <span class="badge badge-<?= $h['estado'] ?>">
                                 <?= ucfirst($h['estado']) ?>
@@ -271,7 +276,7 @@ $solo_lectura = $rol === 'recepcionista';
                         <td style="text-align:center;white-space:nowrap;">
 
                                      <?php if (!$solo_lectura): ?>
-                                     <a href="/hotel-system/controllers/HabitacionController.php?accion=editar&id=<?= $h['habitacion_id'] ?>"
+                                     <a href="../../controllers/HabitacionController.php?accion=editar&id=<?= $h['habitacion_id'] ?>"
                                          class="btn-edit">✏️ Editar</a>
                                      <?php endif; ?>
 
@@ -282,7 +287,7 @@ $solo_lectura = $rol === 'recepcionista';
                                     <div class="dropdown-header">Cambiar a:</div>
                                     <?php foreach (['disponible','ocupada','mantenimiento'] as $e):
                                         if ($e === $h['estado']) continue; ?>
-                                    <a href="/hotel-system/controllers/HabitacionController.php?accion=estado&id=<?= $h['habitacion_id'] ?>&nuevo_estado=<?= $e ?>">
+                                    <a href="../../controllers/HabitacionController.php?accion=estado&id=<?= $h['habitacion_id'] ?>&nuevo_estado=<?= $e ?>">
                                         <?= ucfirst($e) ?>
                                     </a>
                                     <?php endforeach; ?>
@@ -291,7 +296,7 @@ $solo_lectura = $rol === 'recepcionista';
                             <?php endif; ?>
 
                             <?php if ($_SESSION['rol'] === 'administrador'): ?>
-                            <a href="/hotel-system/controllers/HabitacionController.php?accion=eliminar&id=<?= $h['habitacion_id'] ?>"
+                            <a href="../../controllers/HabitacionController.php?accion=eliminar&id=<?= $h['habitacion_id'] ?>"
                                class="btn-delete"
                                onclick="return confirm('¿Eliminar habitación <?= htmlspecialchars($h['numero']) ?>?\nEsta acción no se puede deshacer.')">
                                🗑️

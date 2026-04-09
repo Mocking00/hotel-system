@@ -13,6 +13,20 @@ if ($_SESSION['rol'] !== 'recepcionista') {
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/Reserva.php';
 
+// Construye una URL absoluta al dashboard para evitar bucles por rutas relativas.
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+$appBase = '';
+$marker = '/views/recepcionista/dashboard.php';
+$pos = strpos($scriptName, $marker);
+if ($pos !== false) {
+    $appBase = substr($scriptName, 0, $pos);
+}
+$dashboardUrl = ($appBase !== '' ? $appBase : '') . '/views/recepcionista/dashboard.php';
+$reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php';
+$habitacionesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/HabitacionController.php';
+$clientesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php';
+$logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
+
 $database = new Database();
 $db       = $database->getConnection();
 
@@ -84,25 +98,24 @@ $badge = [
     <title>Recepción - HotelManager</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f5f7fa; }
+        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f3f8fb; }
 
-        .sidebar { width:250px; background:#2c3e50; color:white; min-height:100vh; padding:20px 0; position:fixed; left:0; top:0; }
+        .sidebar { width:260px; background:#12355b; color:white; min-height:100vh; padding:20px 0; position:fixed; left:0; top:0; }
         .logo-section { padding:0 20px 20px; border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:20px; }
-        .logo { font-size:22px; font-weight:bold; margin-bottom:5px; }
-        .role { font-size:12px; opacity:.7; background:rgba(52,152,219,.3); padding:3px 10px; border-radius:20px; display:inline-block; }
-        .menu-item { padding:13px 20px; display:flex; align-items:center; gap:12px; border-left:4px solid transparent; text-decoration:none; color:rgba(255,255,255,.8); transition:all .2s; font-size:14px; }
-        .menu-item:hover,.menu-item.active { background:rgba(255,255,255,.1); border-left-color:#3498db; color:white; }
-        .menu-icon { font-size:18px; width:22px; }
-        .menu-section { padding:10px 20px 5px; font-size:10px; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:1px; margin-top:10px; }
+        .logo { font-size:24px; font-weight:bold; margin-bottom:5px; }
+        .role { font-size:13px; opacity:0.8; }
+        .menu-item { padding:15px 20px; display:flex; align-items:center; gap:12px; border-left:4px solid transparent; text-decoration:none; color:white; transition:all .3s; font-size:14px; }
+        .menu-item:hover,.menu-item.active { background:rgba(255,255,255,.1); border-left-color:#1b98e0; }
+        .menu-icon { font-size:20px; width:24px; }
 
-        .main-content { margin-left:250px; }
+        .main-content { margin-left:260px; }
         .header { background:white; padding:18px 28px; box-shadow:0 2px 5px rgba(0,0,0,.05); display:flex; justify-content:space-between; align-items:center; }
         .header-title h1 { color:#333; font-size:22px; margin-bottom:3px; }
         .header-subtitle { color:#888; font-size:13px; }
         .user-section { display:flex; align-items:center; gap:12px; }
         .user-info { display:flex; align-items:center; gap:10px; }
-        .user-avatar { width:38px; height:38px; background:#27ae60; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; }
-        .btn-logout { padding:7px 18px; background:#e74c3c; color:white; border:none; border-radius:8px; font-size:13px; text-decoration:none; }
+        .user-avatar { width:38px; height:38px; background:#2a9d8f; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; }
+        .btn-logout { padding:7px 18px; background:#e76f51; color:white; border:none; border-radius:8px; font-size:13px; text-decoration:none; }
 
         .content-area { padding:24px 28px; }
 
@@ -112,23 +125,23 @@ $badge = [
         .stat-card .icon { font-size:26px; margin-bottom:6px; }
         .stat-card .val  { font-size:22px; font-weight:bold; color:#333; }
         .stat-card .lbl  { font-size:11px; color:#888; margin-top:3px; }
-        .stat-card.highlight { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
+        .stat-card.highlight { background:linear-gradient(135deg,#1b98e0,#0b2545); color:white; }
         .stat-card.highlight .val,.stat-card.highlight .lbl { color:white; }
 
         /* Ocupación */
         .occ-bar { background:#e9ecef; border-radius:20px; height:8px; margin-top:6px; overflow:hidden; }
-        .occ-fill { background:linear-gradient(90deg,#27ae60,#2ecc71); height:100%; border-radius:20px; }
+        .occ-fill { background:linear-gradient(90deg,#2a9d8f,#2ec4b6); height:100%; border-radius:20px; }
 
         /* Grid layout */
         .two-col { display:grid; grid-template-columns:1fr 380px; gap:20px; }
 
         .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
         .section-title { font-size:16px; font-weight:700; color:#333; }
-        .btn-ver-todo { font-size:12px; color:#3498db; text-decoration:none; }
+        .btn-ver-todo { font-size:12px; color:#1b98e0; text-decoration:none; }
 
         .card { background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.05); margin-bottom:20px; }
         table { width:100%; border-collapse:collapse; }
-        thead { background:#2c3e50; color:white; }
+        thead { background:#12355b; color:white; }
         thead th { padding:11px 12px; text-align:left; font-size:12px; }
         tbody tr { border-bottom:1px solid #f0f0f0; transition:background .2s; }
         tbody tr:hover { background:#fafafa; }
@@ -137,13 +150,13 @@ $badge = [
         .btn-sm { padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; border:1px solid; display:inline-block; }
         .btn-ci { background:#d4edda; color:#155724; border-color:#c3e6cb; }
         .btn-co { background:#fff3cd; color:#856404; border-color:#ffc107; }
-        .btn-det{ background:#e8f4fd; color:#1a73e8; border-color:#bee3f8; }
+        .btn-det{ background:#e3f4ff; color:#0b6fa4; border-color:#a9d9f5; }
         .empty-row td { text-align:center; padding:30px; color:#bbb; font-size:13px; }
 
         /* Checkins hoy */
         .checkin-item { padding:14px 16px; border-bottom:1px solid #f5f5f5; display:flex; align-items:center; gap:12px; }
         .checkin-item:last-child { border-bottom:none; }
-        .checkin-avatar { width:36px; height:36px; background:#3498db; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:bold; flex-shrink:0; }
+        .checkin-avatar { width:36px; height:36px; background:#1b98e0; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:bold; flex-shrink:0; }
         .checkin-info .nombre { font-size:13px; font-weight:600; color:#333; }
         .checkin-info .sub    { font-size:11px; color:#888; }
         .checkin-actions { margin-left:auto; }
@@ -155,24 +168,22 @@ $badge = [
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Recepcionista</div>
+        <div class="role">Panel de Recepción</div>
     </div>
 
-    <div class="menu-section">Principal</div>
-    <a href="/hotel-system/views/recepcionista/dashboard.php" class="menu-item active">
+    <a href="<?= htmlspecialchars($dashboardUrl) ?>" class="menu-item active">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
-
-    <div class="menu-section">Gestión</div>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">
+    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item">
         <span class="menu-icon">📅</span><span>Reservas</span>
     </a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
+    <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="menu-item">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-
-    <div class="menu-section">Sesión</div>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
+    <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item">
+        <span class="menu-icon">👥</span><span>Clientes</span>
+    </a>
+    <a href="<?= htmlspecialchars($logoutUrl) ?>" class="menu-item">
         <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
     </a>
 </div>
@@ -191,7 +202,7 @@ $badge = [
                     <div style="font-size:11px;color:#888">Recepcionista</div>
                 </div>
             </div>
-            <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="<?= htmlspecialchars($logoutUrl) ?>" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
@@ -207,19 +218,19 @@ $badge = [
                 <div class="occ-bar"><div class="occ-fill" style="width:<?= $occ ?>%"></div></div>
                 <div style="font-size:10px;color:#aaa;margin-top:3px"><?= $occ ?>% ocupado</div>
             </div>
-            <div class="stat-card" style="border-top:3px solid #27ae60">
+            <div class="stat-card" style="border-top:3px solid #2a9d8f">
                 <div class="icon">✅</div>
-                <div class="val" style="color:#27ae60"><?= $hab_disponibles ?></div>
+                <div class="val" style="color:#2a9d8f"><?= $hab_disponibles ?></div>
                 <div class="lbl">Disponibles</div>
             </div>
-            <div class="stat-card" style="border-top:3px solid #e74c3c">
+            <div class="stat-card" style="border-top:3px solid #e76f51">
                 <div class="icon">🔴</div>
-                <div class="val" style="color:#e74c3c"><?= $hab_ocupadas ?></div>
+                <div class="val" style="color:#e76f51"><?= $hab_ocupadas ?></div>
                 <div class="lbl">Ocupadas</div>
             </div>
-            <div class="stat-card" style="border-top:3px solid #3498db">
+            <div class="stat-card" style="border-top:3px solid #1b98e0">
                 <div class="icon">📅</div>
-                <div class="val" style="color:#3498db"><?= $reservas_activas ?></div>
+                <div class="val" style="color:#1b98e0"><?= $reservas_activas ?></div>
                 <div class="lbl">Reservas Activas</div>
             </div>
             <div class="stat-card highlight">
@@ -227,7 +238,7 @@ $badge = [
                 <div class="val"><?= $checkins_hoy ?></div>
                 <div class="lbl">Check-ins Hoy</div>
             </div>
-            <div class="stat-card highlight" style="background:linear-gradient(135deg,#f39c12,#e67e22)">
+            <div class="stat-card highlight" style="background:linear-gradient(135deg,#f4a261,#e9c46a)">
                 <div class="icon">⬆</div>
                 <div class="val"><?= $checkouts_hoy ?></div>
                 <div class="lbl">Check-outs Hoy</div>
@@ -240,7 +251,7 @@ $badge = [
             <div>
                 <div class="section-header">
                     <div class="section-title">📅 Reservas Activas</div>
-                    <a href="/hotel-system/controllers/ReservaController.php" class="btn-ver-todo">Ver todas →</a>
+                    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="btn-ver-todo">Ver todas →</a>
                 </div>
                 <div class="card">
                     <table>
@@ -269,13 +280,13 @@ $badge = [
                                 <td><?= date('d/m', strtotime($r['fecha_salida'])) ?></td>
                                 <td><span class="badge" style="background:<?= $bc['bg'] ?>;color:<?= $bc['color'] ?>"><?= $bc['icon'] ?> <?= ucfirst($r['estado']) ?></span></td>
                                 <td style="white-space:nowrap">
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
+                                    <a href="../../controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
                                     <?php if (empty($r['fecha_checkin'])): ?>
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=checkin&id=<?= $r['reserva_id'] ?>"
+                                    <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= $r['reserva_id'] ?>"
                                        class="btn-sm btn-ci"
                                        onclick="return confirm('¿Check-in?')">CI</a>
                                     <?php else: ?>
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=checkout&id=<?= $r['reserva_id'] ?>"
+                                    <a href="../../controllers/ReservaController.php?accion=checkout&id=<?= $r['reserva_id'] ?>"
                                        class="btn-sm btn-co"
                                        onclick="return confirm('¿Check-out?')">CO</a>
                                     <?php endif; ?>
@@ -311,7 +322,7 @@ $badge = [
                                 <?php if (!empty($ci['fecha_checkin'])): ?>
                                     <span class="ci-hecho">✅ Hecho</span>
                                 <?php else: ?>
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=checkin&id=<?= $ci['reserva_id'] ?>"
+                                    <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= $ci['reserva_id'] ?>"
                                        class="btn-sm btn-ci"
                                        onclick="return confirm('¿Check-in para <?= htmlspecialchars($ci['nombre_cliente']) ?>?')">
                                        ⬇ CI
@@ -326,16 +337,16 @@ $badge = [
                 <!-- Acceso rápido -->
                 <div class="section-title" style="margin-bottom:12px">⚡ Acciones de Recepción</div>
                 <div class="card" style="padding:12px">
-                    <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo"
+                    <a href="../../controllers/ClienteController.php?accion=crear_usuario_nuevo"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333;margin-bottom:4px"
-                       onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
+                       onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                         <span style="font-size:20px">🔐</span>
                         <div><div style="font-weight:600;font-size:13px">Crear Usuario Cliente</div>
                         <div style="font-size:11px;color:#888">Alta directa de cliente con credenciales</div></div>
                     </a>
-                    <a href="/hotel-system/controllers/ReservaController.php"
+                    <a href="../../controllers/ReservaController.php"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333"
-                       onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
+                       onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                         <span style="font-size:20px">✅</span>
                         <div><div style="font-weight:600;font-size:13px">Confirmar CI/CO</div>
                         <div style="font-size:11px;color:#888">Gestión operativa de llegadas/salidas</div></div>

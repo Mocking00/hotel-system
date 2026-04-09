@@ -1,9 +1,9 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: /hotel-system/views/auth/login.php"); exit(); }
+<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_admin = $rol === 'administrador';
 $es_recepcion = $rol === 'recepcionista';
-$dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel-system/views/recepcionista/dashboard.php';
+$dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcionista/dashboard.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,50 +13,50 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
     <title>Clientes - HotelManager</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Segoe UI',sans-serif;background:#f5f7fa}
-        .sidebar{width:260px;background:#2c3e50;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
+        body{font-family:'Segoe UI',sans-serif;background:#f3f8fb}
+        .sidebar{width:260px;background:#12355b;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
         .logo-section{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px}
         .logo{font-size:24px;font-weight:bold;margin-bottom:5px}
         .role{font-size:13px;opacity:.8}
         .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px}
-        .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#3498db}
+        .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#1b98e0}
         .menu-icon{font-size:18px;width:22px}
         .main-content{margin-left:260px}
         .header{background:white;padding:20px 30px;box-shadow:0 2px 5px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
         .header h1{color:#333;font-size:24px;margin-bottom:4px}
         .header-subtitle{color:#666;font-size:14px}
         .user-section{display:flex;align-items:center;gap:12px}
-        .user-avatar{width:40px;height:40px;background:#3498db;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold}
-        .btn-logout{padding:8px 20px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:14px;text-decoration:none}
+        .user-avatar{width:40px;height:40px;background:#1b98e0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold}
+        .btn-logout{padding:8px 20px;background:#e76f51;color:white;border:none;border-radius:8px;font-size:14px;text-decoration:none}
         .content-area{padding:30px}
         .alert{padding:15px 20px;border-radius:8px;margin-bottom:20px;font-size:14px}
         .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
         .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
         .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
         .toolbar h2{color:#333;font-size:20px}
-        .btn-primary{padding:10px 22px;background:#3498db;color:white;border:none;border-radius:8px;font-size:14px;text-decoration:none;transition:all .3s}
-        .btn-primary:hover{background:#2980b9}
+        .btn-primary{padding:10px 22px;background:#1b98e0;color:white;border:none;border-radius:8px;font-size:14px;text-decoration:none;transition:all .3s}
+        .btn-primary:hover{background:#1475ae}
         .filter-bar{background:white;padding:15px 20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:12px;align-items:flex-end;margin-bottom:20px}
         .filter-group{display:flex;flex-direction:column;gap:5px;flex:1}
         .filter-group label{font-size:12px;font-weight:600;color:#555}
         .filter-group input{padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}
-        .btn-filter{padding:8px 18px;background:#667eea;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px}
+        .btn-filter{padding:8px 18px;background:#1b98e0;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px}
         .btn-clear{padding:8px 18px;background:#f8f9fa;color:#555;border:1px solid #ddd;border-radius:6px;font-size:13px;text-decoration:none}
         .table-card{background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow:hidden}
         table{width:100%;border-collapse:collapse}
-        thead{background:#2c3e50;color:white}
+        thead{background:#12355b;color:white}
         thead th{padding:13px 14px;text-align:left;font-size:13px}
         tbody tr{border-bottom:1px solid #f0f0f0;transition:background .2s}
         tbody tr:hover{background:#f8f9fa}
         tbody td{padding:13px 14px;font-size:13px;color:#444}
         .table-footer{padding:12px 14px;color:#888;font-size:13px;background:#fafafa}
         .btn-sm{padding:4px 10px;border-radius:6px;font-size:12px;text-decoration:none;border:1px solid;display:inline-block;margin-right:3px}
-        .btn-detail{background:#e8f4fd;color:#1a73e8;border-color:#bee3f8}
+        .btn-detail{background:#e3f4ff;color:#0b6fa4;border-color:#a9d9f5}
         .btn-edit{background:#fff3cd;color:#856404;border-color:#ffc107}
         .btn-del{background:#f8d7da;color:#721c24;border-color:#f5c6cb}
         .empty-state{text-align:center;padding:60px;color:#aaa}
         .empty-state span{font-size:48px;display:block;margin-bottom:15px}
-        .badge-reservas{padding:3px 9px;background:#e8f4fd;color:#1a73e8;border-radius:20px;font-size:11px;font-weight:600}
+        .badge-reservas{padding:3px 9px;background:#e3f4ff;color:#0b6fa4;border-radius:20px;font-size:11px;font-weight:600}
     </style>
 </head>
 <body>
@@ -66,13 +66,13 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
     <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
+    <a href="../../controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
+    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
+    <a href="../../controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
     <?php if ($es_admin): ?>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
     <?php endif; ?>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
@@ -87,7 +87,7 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
                 <div style="font-size:12px;color:#666"><?= ucfirst(htmlspecialchars($rol)) ?></div>
             </div>
-            <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
@@ -99,14 +99,14 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
         <div class="toolbar">
             <h2>Clientes registrados</h2>
             <?php if ($es_admin): ?>
-            <a href="/hotel-system/controllers/ClienteController.php?accion=crear" class="btn-primary">➕ Nuevo Cliente</a>
+            <a href="../../controllers/ClienteController.php?accion=crear" class="btn-primary">➕ Nuevo Cliente</a>
             <?php elseif ($es_recepcion): ?>
-            <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-primary">🔐 Nuevo Usuario Cliente</a>
+            <a href="../../controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-primary">🔐 Nuevo Usuario Cliente</a>
             <?php endif; ?>
         </div>
 
         <!-- Buscador -->
-        <form method="GET" action="/hotel-system/controllers/ClienteController.php">
+        <form method="GET" action="../../controllers/ClienteController.php">
             <input type="hidden" name="accion" value="listar">
             <div class="filter-bar">
                 <div class="filter-group">
@@ -115,7 +115,7 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
                            value="<?= htmlspecialchars($buscar ?? '') ?>">
                 </div>
                 <button type="submit" class="btn-filter">🔍 Buscar</button>
-                <a href="/hotel-system/controllers/ClienteController.php" class="btn-clear">✕ Limpiar</a>
+                <a href="../../controllers/ClienteController.php" class="btn-clear">✕ Limpiar</a>
             </div>
         </form>
 
@@ -149,7 +149,7 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
                         <td>
                             <div style="font-weight:600"><?= htmlspecialchars($c['apellido'].', '.$c['nombre']) ?></div>
                             <?php if (!empty($c['username'])): ?>
-                            <div style="font-size:11px;color:#3498db">@<?= htmlspecialchars($c['username']) ?></div>
+                            <div style="font-size:11px;color:#1b98e0">@<?= htmlspecialchars($c['username']) ?></div>
                             <?php endif; ?>
                         </td>
                         <td><?= htmlspecialchars($c['cedula']) ?></td>
@@ -160,17 +160,17 @@ $dashboard_url = $es_admin ? '/hotel-system/views/admin/dashboard.php' : '/hotel
                         </td>
                         <td style="color:#888;font-size:12px"><?= date('d/m/Y', strtotime($c['fecha_registro'])) ?></td>
                         <td style="text-align:center;white-space:nowrap">
-                                     <a href="/hotel-system/controllers/ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
+                                     <a href="../../controllers/ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
 
                                      <?php if ($es_admin): ?>
-                                     <a href="/hotel-system/controllers/ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
-                                     <a href="/hotel-system/controllers/ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
+                                     <a href="../../controllers/ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
+                                     <a href="../../controllers/ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
                                          class="btn-sm btn-del"
                                          onclick="return confirm('¿Eliminar a <?= htmlspecialchars($c['nombre'].' '.$c['apellido']) ?>? Esta acción no se puede deshacer.')">🗑</a>
                                      <?php endif; ?>
 
                                      <?php if ($es_recepcion && empty($c['username'])): ?>
-                                     <a href="/hotel-system/controllers/ClienteController.php?accion=crear_usuario&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">🔐 Usuario</a>
+                                     <a href="../../controllers/ClienteController.php?accion=crear_usuario&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">🔐 Usuario</a>
                                      <?php endif; ?>
                         </td>
                     </tr>

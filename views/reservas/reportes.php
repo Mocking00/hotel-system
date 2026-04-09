@@ -1,10 +1,10 @@
 <?php
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 if ($_SESSION['rol'] === 'cliente') {
-    header("Location: /hotel-system/controllers/ReservaController.php");
+    header("Location: ../../controllers/ReservaController.php");
     exit();
 }
 
@@ -24,10 +24,10 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
     <title>Reportes de Reservas - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0;
             position: fixed; left: 0; top: 0;
         }
@@ -41,7 +41,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
-            border-left-color: #3498db;
+            border-left-color: #1b98e0;
         }
 
         .main-content { margin-left: 260px; }
@@ -68,7 +68,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
             border-radius: 6px; font-size: 13px;
         }
         .btn-filter {
-            padding: 8px 18px; background: #667eea; color: white;
+            padding: 8px 18px; background: #1b98e0; color: white;
             border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
             text-decoration: none;
         }
@@ -87,8 +87,8 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
             background: white; border-radius: 12px; padding: 18px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .stat-title { font-size: 12px; color: #667; margin-bottom: 8px; text-transform: uppercase; font-weight: 700; }
-        .stat-value { font-size: 28px; color: #2c3e50; font-weight: 800; }
+        .stat-title { font-size: 12px; color: #556; margin-bottom: 8px; text-transform: uppercase; font-weight: 700; }
+        .stat-value { font-size: 28px; color: #12355b; font-weight: 800; }
 
         .grid {
             display: grid;
@@ -116,14 +116,14 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
         .bars { display: grid; gap: 10px; }
         .bar-row { display: grid; grid-template-columns: 70px 1fr 80px; gap: 10px; align-items: center; }
         .bar-track { width: 100%; height: 10px; background: #ecf1f7; border-radius: 20px; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #1b98e0, #0b2545); }
 
         .table-card {
             background: white; border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden;
         }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #2c3e50; color: white; }
+        thead { background: #12355b; color: white; }
         thead th { padding: 12px 14px; text-align: left; font-size: 13px; }
         tbody tr { border-bottom: 1px solid #f0f0f0; }
         tbody tr:hover { background: #fafafa; }
@@ -152,12 +152,12 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">📊 Dashboard</a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item active">📈 Reportes</a>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
+    <a href="../views/admin/dashboard.php" class="menu-item">📊 Dashboard</a>
+    <a href="../../controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
+    <a href="../../controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
+    <a href="../../controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item active">📈 Reportes</a>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
 </div>
 
 <div class="main-content">
@@ -170,7 +170,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
     </div>
 
     <div class="content-area">
-        <form method="GET" action="/hotel-system/controllers/ReservaController.php">
+        <form method="GET" action="../../controllers/ReservaController.php">
             <input type="hidden" name="accion" value="reportes">
             <div class="filters">
                 <div class="filter-group">
@@ -193,7 +193,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
                     <input type="date" name="fecha_hasta" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
                 </div>
                 <button type="submit" class="btn-filter">Aplicar</button>
-                <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="btn-clear">Limpiar</a>
+                <a href="../../controllers/ReservaController.php?accion=reportes" class="btn-clear">Limpiar</a>
             </div>
         </form>
 
@@ -294,7 +294,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
                         <td><?= date('d/m/Y', strtotime($r['fecha_entrada'])) ?></td>
                         <td><?= date('d/m/Y', strtotime($r['fecha_salida'])) ?></td>
                         <td><?= (int) $r['noches'] ?></td>
-                        <td style="color:#27ae60;font-weight:700">$<?= number_format((float) $r['precio_total'], 2) ?></td>
+                        <td style="color:#2a9d8f;font-weight:700">$<?= number_format((float) $r['precio_total'], 2) ?></td>
                         <td><span class="badge"><?= ucfirst(htmlspecialchars($r['estado'])) ?></span></td>
                     </tr>
                     <?php endforeach; ?>
@@ -308,3 +308,4 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
 
 </body>
 </html>
+

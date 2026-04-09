@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 $username = $_SESSION['username'];
@@ -13,10 +13,10 @@ $username = $_SESSION['username'];
     <title>Editar Habitación - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0; position: fixed; left: 0; top: 0;
         }
         .logo-section { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
@@ -27,7 +27,7 @@ $username = $_SESSION['username'];
             display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
         }
-        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #3498db; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #1b98e0; }
         .menu-icon { font-size: 20px; width: 24px; }
 
         .main-content { margin-left: 260px; }
@@ -41,19 +41,19 @@ $username = $_SESSION['username'];
         .user-section { display: flex; align-items: center; gap: 15px; }
         .user-info    { display: flex; align-items: center; gap: 10px; }
         .user-avatar {
-            width: 40px; height: 40px; background: #3498db; border-radius: 50%;
+            width: 40px; height: 40px; background: #1b98e0; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: bold;
         }
         .btn-logout {
-            padding: 8px 20px; background: #e74c3c; color: white;
+            padding: 8px 20px; background: #e76f51; color: white;
             border: none; border-radius: 8px; font-size: 14px; text-decoration: none;
         }
 
         .content-area { padding: 30px; }
 
         .breadcrumb { margin-bottom: 20px; font-size: 13px; color: #888; }
-        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a { color: #1b98e0; text-decoration: none; }
 
         .alert-error {
             background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
@@ -77,7 +77,7 @@ $username = $_SESSION['username'];
             font-size: 14px; color: #333; font-family: inherit;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: #3498db;
+            outline: none; border-color: #1b98e0;
             box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
 
@@ -88,8 +88,8 @@ $username = $_SESSION['username'];
             border: 2px solid #e1e8ed; border-radius: 10px; padding: 18px 10px;
             text-align: center; cursor: pointer; transition: all 0.2s;
         }
-        .tipo-card:hover { border-color: #3498db; background: #f0f7ff; }
-        .tipo-card.selected { border-color: #3498db; background: #ebf5fb; }
+        .tipo-card:hover { border-color: #1b98e0; background: #eef7fb; }
+        .tipo-card.selected { border-color: #1b98e0; background: #e5f3fb; }
         .tipo-card .icon { font-size: 32px; margin-bottom: 8px; }
         .tipo-card .name { font-weight: 600; font-size: 14px; color: #333; }
         .tipo-card .desc { font-size: 11px; color: #888; margin-top: 3px; }
@@ -103,7 +103,7 @@ $username = $_SESSION['username'];
             border: 1px solid #ddd; border-radius: 8px; text-decoration: none; font-size: 14px;
         }
         .btn-update {
-            padding: 10px 28px; background: #e67e22; color: white;
+            padding: 10px 28px; background: #e9c46a; color: white;
             border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
         }
         .btn-update:hover { background: #d35400; }
@@ -117,16 +117,16 @@ $username = $_SESSION['username'];
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de Administración</div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">
+    <a href="../views/admin/dashboard.php" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item active">
+    <a href="../../controllers/HabitacionController.php" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
+    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="../../controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">
         <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
     </a>
 </div>
@@ -145,13 +145,13 @@ $username = $_SESSION['username'];
                     <div style="font-size:12px;color:#666;"><?= ucfirst($_SESSION['rol']) ?></div>
                 </div>
             </div>
-            <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
     <div class="content-area">
         <div class="breadcrumb">
-            <a href="/hotel-system/controllers/HabitacionController.php">🛏️ Habitaciones</a>
+            <a href="../../controllers/HabitacionController.php">🛏️ Habitaciones</a>
             &rsaquo; Editar #<?= htmlspecialchars($datos['numero']) ?>
         </div>
 
@@ -169,7 +169,7 @@ $username = $_SESSION['username'];
         <div class="form-card">
             <h2>📋 Datos de la Habitación</h2>
             <form method="POST"
-                  action="/hotel-system/controllers/HabitacionController.php?accion=editar&id=<?= $datos['habitacion_id'] ?>"
+                  action="../../controllers/HabitacionController.php?accion=editar&id=<?= $datos['habitacion_id'] ?>"
                   id="formEditar">
 
                 <div class="form-grid">
@@ -243,7 +243,7 @@ $username = $_SESSION['username'];
                 </div>
 
                 <div class="form-footer">
-                    <a href="/hotel-system/controllers/HabitacionController.php" class="btn-cancel">✕ Cancelar</a>
+                    <a href="../../controllers/HabitacionController.php" class="btn-cancel">✕ Cancelar</a>
                     <button type="submit" class="btn-update" id="btnActualizar">💾 Actualizar Habitación</button>
                 </div>
 

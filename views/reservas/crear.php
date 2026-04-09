@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -9,8 +9,8 @@ $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
 $es_recepcion = $rol === 'recepcionista';
 $dashboard_url = $es_recepcion
-    ? '/hotel-system/views/recepcionista/dashboard.php'
-    : '/hotel-system/views/admin/dashboard.php';
+    ? '../views/recepcionista/dashboard.php'
+    : '../views/admin/dashboard.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,10 +20,10 @@ $dashboard_url = $es_recepcion
     <title>Nueva Reserva - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0;
             position: fixed; left: 0; top: 0;
         }
@@ -37,14 +37,14 @@ $dashboard_url = $es_recepcion
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
-            border-left-color: #3498db;
+            border-left-color: #1b98e0;
         }
 
         .topbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             color: white; padding: 14px 24px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 3px 14px rgba(102,126,234,0.35);
+            box-shadow: 0 3px 14px rgba(27,152,224,0.35);
         }
         .topbar .left { font-size: 20px; font-weight: 700; }
         .topbar .right { display: flex; align-items: center; gap: 12px; }
@@ -67,7 +67,7 @@ $dashboard_url = $es_recepcion
         .content-area { padding: 30px; }
 
         .breadcrumb { margin-bottom: 20px; font-size: 13px; color: #888; }
-        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a { color: #1b98e0; text-decoration: none; }
 
         .alert-error {
             background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;
@@ -93,7 +93,7 @@ $dashboard_url = $es_recepcion
             font-size: 14px; color: #333; font-family: inherit;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: #3498db;
+            outline: none; border-color: #1b98e0;
             box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
 
@@ -101,11 +101,11 @@ $dashboard_url = $es_recepcion
             border: 1px dashed #ccd8e6; border-radius: 10px;
             padding: 14px; background: #f9fbff;
         }
-        .habitaciones-wrap h3 { font-size: 14px; color: #2c3e50; margin-bottom: 8px; }
-        .hint { font-size: 12px; color: #667; margin-top: 5px; }
+        .habitaciones-wrap h3 { font-size: 14px; color: #12355b; margin-bottom: 8px; }
+        .hint { font-size: 12px; color: #556; margin-top: 5px; }
 
         .resumen {
-            margin-top: 10px; background: #ebf5fb;
+            margin-top: 10px; background: #e5f3fb;
             border: 1px solid #bcdff6; border-radius: 8px;
             padding: 10px 12px; font-size: 13px; color: #24536a;
         }
@@ -119,7 +119,7 @@ $dashboard_url = $es_recepcion
             border: 1px solid #ddd; border-radius: 8px; text-decoration: none; font-size: 14px;
         }
         .btn-save {
-            padding: 10px 28px; background: #27ae60; color: white;
+            padding: 10px 28px; background: #2a9d8f; color: white;
             border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
         }
         .btn-save:disabled { background: #95a5a6; cursor: not-allowed; }
@@ -140,21 +140,21 @@ $dashboard_url = $es_recepcion
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
     <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="../../controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
+    <a href="../../controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
+    <a href="../../controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
     <?php if (!$es_recepcion): ?>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
     <?php endif; ?>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
 </div>
 <?php else: ?>
 <div class="topbar">
     <div class="left">🏨 Nueva Reserva</div>
     <div class="right">
         <div><?= htmlspecialchars($username) ?></div>
-        <a href="/hotel-system/views/cliente/dashboard.php" class="btn">Panel</a>
-        <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
+        <a href="../views/cliente/dashboard.php" class="btn">Panel</a>
+        <a href="../../controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
     </div>
 </div>
 <?php endif; ?>
@@ -170,7 +170,7 @@ $dashboard_url = $es_recepcion
 
     <div class="content-area">
         <div class="breadcrumb">
-            <a href="/hotel-system/controllers/ReservaController.php">📅 Reservas</a> &rsaquo; Nueva
+            <a href="../../controllers/ReservaController.php">📅 Reservas</a> &rsaquo; Nueva
         </div>
 
         <?php if (!empty($errores)): ?>
@@ -187,7 +187,7 @@ $dashboard_url = $es_recepcion
         <div class="form-card">
             <h2>Datos de la Reserva</h2>
 
-            <form method="POST" action="/hotel-system/controllers/ReservaController.php?accion=crear" id="formReserva">
+            <form method="POST" action="../../controllers/ReservaController.php?accion=crear" id="formReserva">
                 <div class="form-grid">
 
                     <?php if (!$es_cliente): ?>
@@ -270,7 +270,7 @@ $dashboard_url = $es_recepcion
                 </div>
 
                 <div class="form-footer">
-                    <a href="/hotel-system/controllers/ReservaController.php" class="btn-cancel">Cancelar</a>
+                    <a href="../../controllers/ReservaController.php" class="btn-cancel">Cancelar</a>
                     <button type="submit" class="btn-save" id="btnGuardar">Guardar Reserva</button>
                 </div>
             </form>
@@ -285,6 +285,24 @@ function diasEntre(fechaEntrada, fechaSalida) {
     const b = new Date(fechaSalida + 'T00:00:00');
     const diff = b.getTime() - a.getTime();
     return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function sincronizarFechasReserva() {
+    const entradaInput = document.getElementById('fecha_entrada');
+    const salidaInput = document.getElementById('fecha_salida');
+    const entrada = entradaInput.value;
+
+    if (!entrada) return;
+
+    const minSalida = new Date(entrada + 'T00:00:00');
+    minSalida.setDate(minSalida.getDate() + 1);
+    const minSalidaStr = minSalida.toISOString().split('T')[0];
+
+    salidaInput.min = minSalidaStr;
+
+    if (!salidaInput.value || salidaInput.value < minSalidaStr) {
+        salidaInput.value = minSalidaStr;
+    }
 }
 
 function actualizarResumen() {
@@ -316,7 +334,7 @@ async function recargarHabitaciones() {
         return;
     }
 
-    const url = '/hotel-system/controllers/ReservaController.php?accion=api_habitaciones'
+    const url = '../../controllers/ReservaController.php?accion=api_habitaciones'
         + '&fecha_entrada=' + encodeURIComponent(entrada)
         + '&fecha_salida=' + encodeURIComponent(salida)
         + '&numero_personas=' + encodeURIComponent(personas)
@@ -350,11 +368,22 @@ async function recargarHabitaciones() {
     }
 }
 
-['fecha_entrada','fecha_salida','numero_personas','tipo_habitacion'].forEach(id => {
+['numero_personas','tipo_habitacion'].forEach(id => {
     document.getElementById(id).addEventListener('change', recargarHabitaciones);
 });
 document.getElementById('habitacion_id').addEventListener('change', actualizarResumen);
 
+document.getElementById('fecha_entrada').addEventListener('change', function() {
+    sincronizarFechasReserva();
+    recargarHabitaciones();
+});
+
+document.getElementById('fecha_salida').addEventListener('change', function() {
+    sincronizarFechasReserva();
+    recargarHabitaciones();
+});
+
+sincronizarFechasReserva();
 actualizarResumen();
 
 document.getElementById('formReserva').addEventListener('submit', function(e) {
@@ -375,3 +404,4 @@ document.getElementById('formReserva').addEventListener('submit', function(e) {
 </script>
 </body>
 </html>
+

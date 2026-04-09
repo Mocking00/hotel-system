@@ -2,12 +2,12 @@
 session_start();
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 
 if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista', 'cliente'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 
@@ -23,7 +23,7 @@ $accion = $_GET['accion'] ?? 'listar';
 if ($_SESSION['rol'] === 'recepcionista' && !in_array($accion, ['listar', 'crear', 'detalle', 'checkin', 'checkout'])) {
     $_SESSION['mensaje'] = 'Recepcion solo puede listar, crear reservas y confirmar CI/CO.';
     $_SESSION['tipo_msg'] = 'error';
-    header('Location: /hotel-system/controllers/ReservaController.php');
+    header('Location: ./ReservaController.php');
     exit;
 }
 
@@ -74,7 +74,7 @@ function accion_listar($reserva) {
     if ($_SESSION['rol'] === 'cliente' && empty($solo_cliente_id)) {
         $_SESSION['mensaje'] = 'No se encontro un perfil de cliente asociado a tu usuario.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/views/cliente/dashboard.php');
+        header('Location: ../views/cliente/dashboard.php');
         exit;
     }
 
@@ -107,7 +107,7 @@ function accion_crear($reserva) {
     if ($es_cliente && empty($cliente_actual_id)) {
         $_SESSION['mensaje'] = 'No se encontro un perfil de cliente asociado a tu usuario.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/views/cliente/dashboard.php');
+        header('Location: ../views/cliente/dashboard.php');
         exit;
     }
 
@@ -153,12 +153,17 @@ function accion_crear($reserva) {
 
         $habitaciones_disponibles = [];
         if (empty($errores)) {
-            $habitaciones_disponibles = $reserva->obtenerHabitacionesDisponibles(
-                $datos['fecha_entrada'],
-                $datos['fecha_salida'],
-                (int) $datos['numero_personas'],
-                $datos['tipo_habitacion']
-            );
+            try {
+                $habitaciones_disponibles = $reserva->obtenerHabitacionesDisponibles(
+                    $datos['fecha_entrada'],
+                    $datos['fecha_salida'],
+                    (int) $datos['numero_personas'],
+                    $datos['tipo_habitacion']
+                );
+            } catch (Throwable $e) {
+                $errores[] = 'No se pudieron consultar habitaciones disponibles. Intenta nuevamente.';
+                $habitaciones_disponibles = [];
+            }
 
             if (empty($datos['habitacion_id']) || !ctype_digit((string) $datos['habitacion_id'])) {
                 $errores[] = 'Debes seleccionar una habitacion disponible.';
@@ -179,42 +184,53 @@ function accion_crear($reserva) {
         }
 
         if (empty($errores)) {
-            $precio_total = $reserva->calcularPrecioTotal(
-                (int) $datos['habitacion_id'],
-                $datos['fecha_entrada'],
-                $datos['fecha_salida']
-            );
+            try {
+                $precio_total = $reserva->calcularPrecioTotal(
+                    (int) $datos['habitacion_id'],
+                    $datos['fecha_entrada'],
+                    $datos['fecha_salida']
+                );
 
-            if ($precio_total === false) {
-                $errores[] = 'No se pudo calcular el precio total de la reserva.';
-            } else {
-                $reserva->cliente_id       = (int) $datos['cliente_id'];
-                $reserva->habitacion_id    = (int) $datos['habitacion_id'];
-                $reserva->fecha_entrada    = $datos['fecha_entrada'];
-                $reserva->fecha_salida     = $datos['fecha_salida'];
-                $reserva->numero_personas  = (int) $datos['numero_personas'];
-                $reserva->precio_total     = $precio_total;
-                $reserva->estado           = 'pendiente';
-                $reserva->notas_especiales = $datos['notas_especiales'];
+                if ($precio_total === false) {
+                    $errores[] = 'No se pudo calcular el precio total de la reserva.';
+                } else {
+                    $reserva->cliente_id       = (int) $datos['cliente_id'];
+                    $reserva->habitacion_id    = (int) $datos['habitacion_id'];
+                    $reserva->fecha_entrada    = $datos['fecha_entrada'];
+                    $reserva->fecha_salida     = $datos['fecha_salida'];
+                    $reserva->numero_personas  = (int) $datos['numero_personas'];
+                    $reserva->precio_total     = $precio_total;
+                    $reserva->estado           = 'pendiente';
+                    $reserva->notas_especiales = $datos['notas_especiales'];
 
-                if ($reserva->crear()) {
-                    $_SESSION['mensaje'] = 'Reserva creada correctamente.';
-                    $_SESSION['tipo_msg'] = 'success';
-                    header('Location: /hotel-system/controllers/ReservaController.php?accion=detalle&id=' . $reserva->reserva_id);
-                    exit;
+                    if ($reserva->crear()) {
+                        $_SESSION['mensaje'] = 'Reserva creada correctamente.';
+                        $_SESSION['tipo_msg'] = 'success';
+                        header('Location: ./ReservaController.php?accion=detalle&id=' . $reserva->reserva_id);
+                        exit;
+                    }
+                    $errores[] = 'Error al guardar la reserva en la base de datos.';
                 }
-                $errores[] = 'Error al guardar la reserva en la base de datos.';
+            } catch (Throwable $e) {
+                $errores[] = 'No se pudo completar la reserva. Detalle: ' . $e->getMessage();
             }
         }
     }
 
     if (!isset($habitaciones_disponibles)) {
-        $habitaciones_disponibles = $reserva->obtenerHabitacionesDisponibles(
-            $datos['fecha_entrada'],
-            $datos['fecha_salida'],
-            (int) $datos['numero_personas'],
-            $datos['tipo_habitacion']
-        );
+        try {
+            $habitaciones_disponibles = $reserva->obtenerHabitacionesDisponibles(
+                $datos['fecha_entrada'],
+                $datos['fecha_salida'],
+                (int) $datos['numero_personas'],
+                $datos['tipo_habitacion']
+            );
+        } catch (Throwable $e) {
+            $habitaciones_disponibles = [];
+            if (empty($errores)) {
+                $errores[] = 'No se pudieron cargar habitaciones disponibles en este momento.';
+            }
+        }
     }
 
     $clientes = $es_cliente ? [] : $reserva->obtenerClientesSelect();
@@ -225,7 +241,7 @@ function accion_crear($reserva) {
 function accion_detalle($reserva) {
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -233,7 +249,7 @@ function accion_detalle($reserva) {
     if ($_SESSION['rol'] === 'cliente' && empty($solo_cliente_id)) {
         $_SESSION['mensaje'] = 'No se encontro un perfil de cliente asociado a tu usuario.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/views/cliente/dashboard.php');
+        header('Location: ../views/cliente/dashboard.php');
         exit;
     }
 
@@ -241,7 +257,7 @@ function accion_detalle($reserva) {
     if (!$reserva_detalle) {
         $_SESSION['mensaje'] = 'Reserva no encontrada.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -256,13 +272,13 @@ function accion_checkin($reserva) {
     if ($_SESSION['rol'] === 'cliente') {
         $_SESSION['mensaje'] = 'No tienes permisos para registrar check-in.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -274,7 +290,7 @@ function accion_checkin($reserva) {
         $_SESSION['tipo_msg'] = 'error';
     }
 
-    header('Location: /hotel-system/controllers/ReservaController.php?accion=detalle&id=' . $id);
+    header('Location: ./ReservaController.php?accion=detalle&id=' . $id);
     exit;
 }
 
@@ -282,13 +298,13 @@ function accion_checkout($reserva) {
     if ($_SESSION['rol'] === 'cliente') {
         $_SESSION['mensaje'] = 'No tienes permisos para registrar check-out.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -300,14 +316,14 @@ function accion_checkout($reserva) {
         $_SESSION['tipo_msg'] = 'error';
     }
 
-    header('Location: /hotel-system/controllers/ReservaController.php?accion=detalle&id=' . $id);
+    header('Location: ./ReservaController.php?accion=detalle&id=' . $id);
     exit;
 }
 
 function accion_cancelar($reserva) {
     $id = intval($_GET['id'] ?? 0);
     if (!$id) {
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -317,7 +333,7 @@ function accion_cancelar($reserva) {
         if (!$pertenece) {
             $_SESSION['mensaje'] = 'No puedes cancelar una reserva que no te pertenece.';
             $_SESSION['tipo_msg'] = 'error';
-            header('Location: /hotel-system/controllers/ReservaController.php');
+            header('Location: ./ReservaController.php');
             exit;
         }
     }
@@ -330,7 +346,7 @@ function accion_cancelar($reserva) {
         $_SESSION['tipo_msg'] = 'error';
     }
 
-    header('Location: /hotel-system/controllers/ReservaController.php?accion=detalle&id=' . $id);
+    header('Location: ./ReservaController.php?accion=detalle&id=' . $id);
     exit;
 }
 
@@ -347,14 +363,17 @@ function api_habitaciones($reserva) {
         exit;
     }
 
-    $habitaciones = $reserva->obtenerHabitacionesDisponibles(
-        $fecha_entrada,
-        $fecha_salida,
-        $numero_personas,
-        $tipo
-    );
-
-    echo json_encode($habitaciones);
+    try {
+        $habitaciones = $reserva->obtenerHabitacionesDisponibles(
+            $fecha_entrada,
+            $fecha_salida,
+            $numero_personas,
+            $tipo
+        );
+        echo json_encode($habitaciones);
+    } catch (Throwable $e) {
+        echo json_encode([]);
+    }
     exit;
 }
 
@@ -362,7 +381,7 @@ function accion_reportes($reserva) {
     if ($_SESSION['rol'] !== 'administrador') {
         $_SESSION['mensaje'] = 'No tienes permisos para acceder a reportes.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/ReservaController.php');
+        header('Location: ./ReservaController.php');
         exit;
     }
 
@@ -372,10 +391,17 @@ function accion_reportes($reserva) {
         'fecha_hasta' => trim($_GET['fecha_hasta'] ?? ''),
     ];
 
-    $kpis            = $reserva->obtenerKpisReporte($filtros);
-    $resumen_estados = $reserva->obtenerResumenPorEstado($filtros);
-    $ingresos_mes    = $reserva->obtenerIngresosMensuales(6);
-    $reportes        = $reserva->obtenerReporteReservas($filtros);
+    try {
+        $kpis            = $reserva->obtenerKpisReporte($filtros);
+        $resumen_estados = $reserva->obtenerResumenPorEstado($filtros);
+        $ingresos_mes    = $reserva->obtenerIngresosMensuales(6);
+        $reportes        = $reserva->obtenerReporteReservas($filtros);
+    } catch (Throwable $e) {
+        $_SESSION['mensaje'] = 'No se pudo cargar el módulo de reportes en este momento.';
+        $_SESSION['tipo_msg'] = 'error';
+        header('Location: ./ReservaController.php');
+        exit;
+    }
 
     include __DIR__ . '/../views/reservas/reportes.php';
 }

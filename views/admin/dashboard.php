@@ -33,6 +33,19 @@ $stmt = $db->query("SELECT COUNT(*) FROM CLIENTE");
 $total_clientes = $stmt->fetchColumn();
 
 $username = $_SESSION['username'];
+
+// URLs absolutas dentro de la app para evitar problemas con rutas relativas.
+$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+$marker = '/views/admin/dashboard.php';
+$pos = strpos($scriptName, $marker);
+$appBase = $pos !== false ? substr($scriptName, 0, $pos) : '';
+
+$urlAdminDashboard = $appBase . '/views/admin/dashboard.php';
+$urlHabitaciones = $appBase . '/controllers/HabitacionController.php';
+$urlReservas = $appBase . '/controllers/ReservaController.php';
+$urlClientes = $appBase . '/controllers/ClienteController.php';
+$urlReportes = $appBase . '/controllers/ReservaController.php?accion=reportes';
+$urlLogout = $appBase . '/controllers/UsuarioController.php?action=logout';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -42,10 +55,10 @@ $username = $_SESSION['username'];
     <title>Dashboard Administrador - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
         
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0;
             position: fixed; left: 0; top: 0;
         }
@@ -60,7 +73,7 @@ $username = $_SESSION['username'];
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
-            border-left-color: #3498db;
+            border-left-color: #1b98e0;
         }
         .menu-icon { font-size: 20px; width: 24px; }
 
@@ -75,12 +88,12 @@ $username = $_SESSION['username'];
         .user-section { display: flex; align-items: center; gap: 15px; }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-avatar {
-            width: 40px; height: 40px; background: #3498db;
+            width: 40px; height: 40px; background: #1b98e0;
             border-radius: 50%; display: flex; align-items: center;
             justify-content: center; color: white; font-weight: bold;
         }
         .btn-logout {
-            padding: 8px 20px; background: #e74c3c; color: white;
+            padding: 8px 20px; background: #e76f51; color: white;
             border: none; border-radius: 8px; cursor: pointer;
             font-size: 14px; transition: all 0.3s; text-decoration: none;
         }
@@ -88,7 +101,7 @@ $username = $_SESSION['username'];
 
         .content-area { padding: 30px; }
         .welcome-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             color: white; padding: 40px; border-radius: 15px;
             margin-bottom: 30px; box-shadow: 0 10px 30px rgba(102,126,234,0.3);
         }
@@ -126,8 +139,8 @@ $username = $_SESSION['username'];
             text-decoration: none; color: #333;
         }
         .action-btn:hover {
-            background: #667eea; color: white;
-            border-color: #667eea; transform: translateY(-3px);
+            background: #1b98e0; color: white;
+            border-color: #1b98e0; transform: translateY(-3px);
         }
         .action-icon { font-size: 32px; margin-bottom: 10px; }
     </style>
@@ -140,37 +153,29 @@ $username = $_SESSION['username'];
             <div class="role">Panel de Administración</div>
         </div>
         
-        <a href="/hotel-system/views/admin/dashboard.php" class="menu-item active">
+        <a href="<?= htmlspecialchars($urlAdminDashboard) ?>" class="menu-item active">
             <span class="menu-icon">📊</span>
             <span>Dashboard</span>
         </a>
-        <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
+        <a href="<?= htmlspecialchars($urlHabitaciones) ?>" class="menu-item">
             <span class="menu-icon">🛏️</span>
             <span>Habitaciones</span>
         </a>
         <!-- ✅ Reservas — enlace real -->
-        <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">
+        <a href="<?= htmlspecialchars($urlReservas) ?>" class="menu-item">
             <span class="menu-icon">📅</span>
             <span>Reservas</span>
         </a>
         <!-- ✅ Clientes — enlace real -->
-        <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">
+        <a href="<?= htmlspecialchars($urlClientes) ?>" class="menu-item">
             <span class="menu-icon">👥</span>
             <span>Clientes</span>
         </a>
-        <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">
-            <span class="menu-icon">⭐</span>
-            <span>Servicios</span>
-        </a>
-        <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">
+        <a href="<?= htmlspecialchars($urlReportes) ?>" class="menu-item">
             <span class="menu-icon">📈</span>
             <span>Reportes</span>
         </a>
-        <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">
-            <span class="menu-icon">⚙️</span>
-            <span>Configuración</span>
-        </a>
-        <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
+        <a href="<?= htmlspecialchars($urlLogout) ?>" class="menu-item">
             <span class="menu-icon">🚪</span>
             <span>Cerrar Sesión</span>
         </a>
@@ -191,7 +196,7 @@ $username = $_SESSION['username'];
                         <div style="font-size:12px;color:#666">Administrador</div>
                     </div>
                 </div>
-                <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+                <a href="<?= htmlspecialchars($urlLogout) ?>" class="btn-logout">Cerrar Sesión</a>
             </div>
         </div>
         
@@ -230,19 +235,19 @@ $username = $_SESSION['username'];
             <div class="quick-actions">
                 <h3>⚡ Acciones Rápidas</h3>
                 <div class="actions-grid">
-                    <a href="/hotel-system/controllers/ReservaController.php?accion=crear" class="action-btn">
+                    <a href="<?= htmlspecialchars($urlReservas) ?>?accion=crear" class="action-btn">
                         <div class="action-icon">➕</div>
                         <div>Nueva Reserva</div>
                     </a>
-                    <a href="/hotel-system/controllers/HabitacionController.php" class="action-btn">
+                    <a href="<?= htmlspecialchars($urlHabitaciones) ?>" class="action-btn">
                         <div class="action-icon">🛏️</div>
                         <div>Gestionar Habitaciones</div>
                     </a>
-                    <a href="/hotel-system/controllers/ClienteController.php?accion=crear" class="action-btn">
+                    <a href="<?= htmlspecialchars($urlClientes) ?>?accion=crear" class="action-btn">
                         <div class="action-icon">👤</div>
                         <div>Nuevo Cliente</div>
                     </a>
-                    <a href="/hotel-system/controllers/ReservaController.php" class="action-btn">
+                    <a href="<?= htmlspecialchars($urlReservas) ?>" class="action-btn">
                         <div class="action-icon">📊</div>
                         <div>Ver Reservas</div>
                     </a>

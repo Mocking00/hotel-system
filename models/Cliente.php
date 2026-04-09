@@ -25,6 +25,25 @@ class Cliente {
         $this->conn = $db;
     }
 
+    // Valida fecha (YYYY-MM-DD), no futura y con edad minima.
+    private function fechaNacimientoValida($fechaNacimiento, $edadMinima = 18) {
+        if (empty($fechaNacimiento)) {
+            return true; // Se mantiene opcional para el perfil cliente.
+        }
+
+        $fecha = DateTime::createFromFormat('Y-m-d', $fechaNacimiento);
+        if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimiento) {
+            return false;
+        }
+
+        $hoy = new DateTime('today');
+        if ($fecha > $hoy) {
+            return false;
+        }
+
+        return $fecha->diff($hoy)->y >= $edadMinima;
+    }
+
     // ── LISTAR TODOS ─────────────────────────────────────────────────────
     public function leerTodos($buscar = '') {
         $query = "SELECT c.cliente_id, c.nombre, c.apellido, c.cedula,
@@ -82,6 +101,10 @@ class Cliente {
 
     // ── CREAR ────────────────────────────────────────────────────────────
     public function crear() {
+        if (!$this->fechaNacimientoValida($this->fecha_nacimiento, 18)) {
+            return false;
+        }
+
         $query = "INSERT INTO " . $this->table . "
                   (usuario_id, nombre, apellido, cedula, telefono,
                    email, direccion, fecha_nacimiento)
@@ -111,6 +134,10 @@ class Cliente {
 
     // ── ACTUALIZAR ───────────────────────────────────────────────────────
     public function actualizar() {
+        if (!$this->fechaNacimientoValida($this->fecha_nacimiento, 18)) {
+            return false;
+        }
+
         $query = "UPDATE " . $this->table . "
                   SET nombre           = :nombre,
                       apellido         = :apellido,

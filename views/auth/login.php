@@ -10,12 +10,10 @@ if (isset($_SESSION['usuario_id'])) {
 // Obtener mensajes de error o éxito
 $error = $_SESSION['error'] ?? '';
 $success = $_SESSION['success'] ?? '';
-$debug = $_SESSION['debug'] ?? '';
 
 // Limpiar mensajes de la sesión
 unset($_SESSION['error']);
 unset($_SESSION['success']);
-unset($_SESSION['debug']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,7 +30,7 @@ unset($_SESSION['debug']);
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -55,7 +53,7 @@ unset($_SESSION['debug']);
         }
         
         .logo h1 {
-            color: #667eea;
+            color: #1b98e0;
             font-size: 32px;
             margin-bottom: 5px;
         }
@@ -84,14 +82,6 @@ unset($_SESSION['debug']);
             border: 1px solid #c3e6cb;
         }
         
-        .alert-debug {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-            font-size: 12px;
-            white-space: pre-wrap;
-        }
-        
         .form-group {
             margin-bottom: 25px;
         }
@@ -115,7 +105,7 @@ unset($_SESSION['debug']);
         
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1b98e0;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
@@ -140,7 +130,7 @@ unset($_SESSION['debug']);
         }
         
         .remember-forgot a {
-            color: #667eea;
+            color: #1b98e0;
             text-decoration: none;
         }
         
@@ -151,7 +141,7 @@ unset($_SESSION['debug']);
         .btn-login {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -200,42 +190,13 @@ unset($_SESSION['debug']);
         }
         
         .register-link a {
-            color: #667eea;
+            color: #1b98e0;
             text-decoration: none;
             font-weight: 600;
         }
         
         .register-link a:hover {
             text-decoration: underline;
-        }
-        
-        .demo-credentials {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 13px;
-        }
-        
-        .demo-credentials strong {
-            color: #856404;
-        }
-        
-        .test-button {
-            width: 100%;
-            padding: 10px;
-            background: #17a2b8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        
-        .test-button:hover {
-            background: #138496;
         }
         
         @media (max-width: 480px) {
@@ -256,13 +217,6 @@ unset($_SESSION['debug']);
             <p>Sistema de Gestión Hotelera</p>
         </div>
         
-        <?php if ($debug): ?>
-            <div class="alert alert-debug">
-                🔍 Debug Info:
-                <?php echo htmlspecialchars($debug); ?>
-            </div>
-        <?php endif; ?>
-        
         <?php if ($error): ?>
             <div class="alert alert-error">
                 ⚠️ <?php echo htmlspecialchars($error); ?>
@@ -275,7 +229,7 @@ unset($_SESSION['debug']);
             </div>
         <?php endif; ?>
         
-        <form method="POST" action="/hotel-system/controllers/UsuarioController.php?action=login">
+        <form method="POST" action="../../controllers/UsuarioController.php?action=login">
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required autofocus>
@@ -291,15 +245,10 @@ unset($_SESSION['debug']);
                     <input type="checkbox" name="remember">
                     Recordarme
                 </label>
-                <a href="#">¿Olvidaste tu contraseña?</a>
             </div>
             
             <button type="submit" class="btn-login">Iniciar Sesión</button>
         </form>
-        
-        <button class="test-button" onclick="window.location.href='../../test-conexion.php'">
-            🔧 Ejecutar Test de Diagnóstico
-        </button>
         
         <div class="divider">o</div>
         
@@ -307,11 +256,6 @@ unset($_SESSION['debug']);
             ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
         </div>
         
-        <div class="demo-credentials">
-            <strong>🔑 Credenciales de Prueba:</strong><br>
-            Usuario: <code>admin</code><br>
-            Contraseña: <code>password</code>
-        </div>
     </div>
 </body>
 </html>

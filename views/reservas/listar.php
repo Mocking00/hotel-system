@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -9,8 +9,8 @@ $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
 $es_recepcion = $rol === 'recepcionista';
 $dashboard_url = $es_recepcion
-    ? '/hotel-system/views/recepcionista/dashboard.php'
-    : '/hotel-system/views/admin/dashboard.php';
+    ? '../views/recepcionista/dashboard.php'
+    : '../views/admin/dashboard.php';
 
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
@@ -28,10 +28,10 @@ $badge = [
     <title>Reservas - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0;
             position: fixed; left: 0; top: 0;
         }
@@ -46,14 +46,14 @@ $badge = [
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
-            border-left-color: #3498db;
+            border-left-color: #1b98e0;
         }
 
         .topbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             color: white; padding: 14px 24px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 3px 14px rgba(102,126,234,0.35);
+            box-shadow: 0 3px 14px rgba(27,152,224,0.35);
         }
         .topbar .left { font-size: 20px; font-weight: 700; }
         .topbar .right { display: flex; align-items: center; gap: 12px; }
@@ -85,11 +85,11 @@ $badge = [
         }
         .toolbar h2 { color: #333; font-size: 20px; }
         .btn-primary {
-            padding: 10px 22px; background: #3498db; color: white;
+            padding: 10px 22px; background: #1b98e0; color: white;
             border: none; border-radius: 8px; font-size: 14px;
             text-decoration: none;
         }
-        .btn-primary:hover { background: #2980b9; }
+        .btn-primary:hover { background: #1475ae; }
 
         .filters {
             background: white; padding: 15px 20px; border-radius: 10px;
@@ -104,7 +104,7 @@ $badge = [
             border-radius: 6px; font-size: 13px;
         }
         .btn-filter {
-            padding: 8px 18px; background: #667eea; color: white;
+            padding: 8px 18px; background: #1b98e0; color: white;
             border: none; border-radius: 6px; cursor: pointer; font-size: 13px;
             text-decoration: none;
         }
@@ -118,7 +118,7 @@ $badge = [
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden;
         }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: #2c3e50; color: white; }
+        thead { background: #12355b; color: white; }
         thead th { padding: 13px 14px; text-align: left; font-size: 13px; }
         tbody tr { border-bottom: 1px solid #f0f0f0; transition: background .2s; }
         tbody tr:hover { background: #fafafa; }
@@ -131,7 +131,7 @@ $badge = [
             text-decoration: none; border: 1px solid; display: inline-block;
             margin: 1px;
         }
-        .btn-det { background: #e8f4fd; color: #1a73e8; border-color: #bee3f8; }
+        .btn-det { background: #e3f4ff; color: #0b6fa4; border-color: #a9d9f5; }
         .btn-ci  { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .btn-co  { background: #fff3cd; color: #856404; border-color: #ffe08a; }
         .btn-can { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
@@ -157,21 +157,21 @@ $badge = [
     <a href="<?= $dashboard_url ?>" class="menu-item">
         <span>📊 Dashboard</span>
     </a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">
+    <a href="../../controllers/HabitacionController.php" class="menu-item">
         <span>🛏️ Habitaciones</span>
     </a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item active">
+    <a href="../../controllers/ReservaController.php" class="menu-item active">
         <span>📅 Reservas</span>
     </a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">
+    <a href="../../controllers/ClienteController.php" class="menu-item">
         <span>👥 Clientes</span>
     </a>
     <?php if (!$es_recepcion): ?>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item">
         <span>📈 Reportes</span>
     </a>
     <?php endif; ?>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">
         <span>🚪 Cerrar Sesion</span>
     </a>
 </div>
@@ -180,8 +180,8 @@ $badge = [
     <div class="left">🏨 Mis Reservas</div>
     <div class="right">
         <div><?= htmlspecialchars($username) ?></div>
-        <a href="/hotel-system/views/cliente/dashboard.php" class="btn">Panel</a>
-        <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
+        <a href="../views/cliente/dashboard.php" class="btn">Panel</a>
+        <a href="../../controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
     </div>
 </div>
 <?php endif; ?>
@@ -203,11 +203,11 @@ $badge = [
         <div class="toolbar">
             <h2>Reservas registradas</h2>
             <?php if (!$es_cliente): ?>
-            <a href="/hotel-system/controllers/ReservaController.php?accion=crear" class="btn-primary">➕ Nueva Reserva</a>
+            <a href="../../controllers/ReservaController.php?accion=crear" class="btn-primary">➕ Nueva Reserva</a>
             <?php endif; ?>
         </div>
 
-        <form method="GET" action="/hotel-system/controllers/ReservaController.php">
+        <form method="GET" action="../../controllers/ReservaController.php">
             <input type="hidden" name="accion" value="listar">
             <div class="filters">
                 <div class="filter-group">
@@ -235,7 +235,7 @@ $badge = [
                     <input type="date" name="fecha_hasta" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
                 </div>
                 <button type="submit" class="btn-filter">🔍 Filtrar</button>
-                <a href="/hotel-system/controllers/ReservaController.php" class="btn-clear">✕ Limpiar</a>
+                <a href="../../controllers/ReservaController.php" class="btn-clear">✕ Limpiar</a>
             </div>
         </form>
 
@@ -282,27 +282,27 @@ $badge = [
                         </td>
                         <td><?= date('d/m/Y', strtotime($r['fecha_entrada'])) ?></td>
                         <td><?= date('d/m/Y', strtotime($r['fecha_salida'])) ?></td>
-                        <td style="color:#27ae60;font-weight:600">$<?= number_format((float) $r['precio_total'], 2) ?></td>
+                        <td style="color:#2a9d8f;font-weight:600">$<?= number_format((float) $r['precio_total'], 2) ?></td>
                         <td>
                             <span class="badge" style="background:<?= $bc['bg'] ?>; color:<?= $bc['color'] ?>">
                                 <?= $bc['icon'] ?> <?= ucfirst($r['estado']) ?>
                             </span>
                         </td>
                         <td style="text-align:center; white-space:nowrap;">
-                            <a href="/hotel-system/controllers/ReservaController.php?accion=detalle&id=<?= (int) $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
+                            <a href="../../controllers/ReservaController.php?accion=detalle&id=<?= (int) $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
 
                             <?php if (!$es_cliente && in_array($r['estado'], ['pendiente','confirmada'])): ?>
                                 <?php if (empty($r['fecha_checkin'])): ?>
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=checkin&id=<?= (int) $r['reserva_id'] ?>"
+                                    <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= (int) $r['reserva_id'] ?>"
                                        class="btn-sm btn-ci" onclick="return confirm('¿Registrar check-in de esta reserva?')">CI</a>
                                 <?php elseif (empty($r['fecha_checkout'])): ?>
-                                    <a href="/hotel-system/controllers/ReservaController.php?accion=checkout&id=<?= (int) $r['reserva_id'] ?>"
+                                    <a href="../../controllers/ReservaController.php?accion=checkout&id=<?= (int) $r['reserva_id'] ?>"
                                        class="btn-sm btn-co" onclick="return confirm('¿Registrar check-out de esta reserva?')">CO</a>
                                 <?php endif; ?>
                             <?php endif; ?>
 
                             <?php if (!$es_recepcion && in_array($r['estado'], ['pendiente','confirmada']) && empty($r['fecha_checkin'])): ?>
-                                <a href="/hotel-system/controllers/ReservaController.php?accion=cancelar&id=<?= (int) $r['reserva_id'] ?>"
+                                <a href="../../controllers/ReservaController.php?accion=cancelar&id=<?= (int) $r['reserva_id'] ?>"
                                    class="btn-sm btn-can" onclick="return confirm('¿Cancelar esta reserva?')">Cancelar</a>
                             <?php endif; ?>
                         </td>
@@ -318,3 +318,4 @@ $badge = [
 
 </body>
 </html>
+

@@ -12,11 +12,34 @@ session_start();
 // Usar rutas absolutas desde el directorio del archivo
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../models/Usuario.php';
+require_once __DIR__ . '/../utils/Validator.php';
 
 class UsuarioController {
     private $db;
     private $usuario;
-    
+
+    private function esMayorDeEdadSeguro($fechaNacimiento, $edadMinima = 18) {
+        if (class_exists('Validator') && method_exists('Validator', 'esMayorDeEdad')) {
+            return Validator::esMayorDeEdad($fechaNacimiento, $edadMinima);
+        }
+
+        if (empty($fechaNacimiento)) {
+            return false;
+        }
+
+        $fecha = DateTime::createFromFormat('Y-m-d', $fechaNacimiento);
+        if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimiento) {
+            return false;
+        }
+
+        $hoy = new DateTime('today');
+        if ($fecha > $hoy) {
+            return false;
+        }
+
+        return $fecha->diff($hoy)->y >= $edadMinima;
+    }
+
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
@@ -35,7 +58,7 @@ class UsuarioController {
             // Validar que no estén vacíos
             if (empty($username) || empty($password)) {
                 $_SESSION['error'] = "Por favor complete todos los campos";
-                header("Location: /hotel-system/views/auth/login.php");
+                header("Location: ../views/auth/login.php");
                 exit();
             }
             
@@ -54,23 +77,23 @@ class UsuarioController {
                 // Redirigir según el rol usando RUTAS ABSOLUTAS
                 switch ($resultado['rol']) {
                     case 'cliente':
-                        header("Location: /hotel-system/views/cliente/dashboard.php");
+                        header("Location: ../views/cliente/dashboard.php");
                         break;
                     case 'recepcionista':
-                        header("Location: /hotel-system/views/recepcionista/dashboard.php");
+                        header("Location: ../views/recepcionista/dashboard.php");
                         break;
                     case 'administrador':
-                        header("Location: /hotel-system/views/admin/dashboard.php");
+                        header("Location: ../views/admin/dashboard.php");
                         break;
                     default:
                         $_SESSION['error'] = "Rol no reconocido";
-                        header("Location: /hotel-system/views/auth/login.php");
+                        header("Location: ../views/auth/login.php");
                 }
                 exit();
             } else {
                 // Login fallido
                 $_SESSION['error'] = "Usuario o contraseña incorrectos";
-                header("Location: /hotel-system/views/auth/login.php");
+                header("Location: ../views/auth/login.php");
                 exit();
             }
         }
@@ -83,7 +106,7 @@ class UsuarioController {
         session_start();
         session_unset();
         session_destroy();
-        header("Location: /hotel-system/views/auth/login.php");
+        header("Location: ../views/auth/login.php");
         exit();
     }
     
@@ -92,52 +115,82 @@ class UsuarioController {
      */
     public function registrar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Obtener datos del formulario
-            $username = $_POST['username'] ?? '';
-            $password = $_POST['password'] ?? '';
-            $password_confirm = $_POST['password_confirm'] ?? '';
-            $nombre = trim($_POST['nombre'] ?? '');
-            $apellido = trim($_POST['apellido'] ?? '');
-            $cedula = trim($_POST['cedula'] ?? '');
-            $telefono = trim($_POST['telefono'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $direccion = trim($_POST['direccion'] ?? '');
-            $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
-            
-            // Validaciones
-            if (empty($username) || empty($password) || empty($password_confirm) || empty($nombre) || empty($apellido) || empty($cedula) || empty($telefono) || empty($email)) {
-                $_SESSION['error'] = "Todos los campos son obligatorios";
-                header("Location: /hotel-system/views/auth/registro.php");
-                exit();
-            }
-
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $_SESSION['error'] = "El email no es válido";
-                header("Location: /hotel-system/views/auth/registro.php");
-                exit();
-            }
-            
-            if ($password !== $password_confirm) {
-                $_SESSION['error'] = "Las contraseñas no coinciden";
-                header("Location: /hotel-system/views/auth/registro.php");
-                exit();
-            }
-            
-            if (strlen($password) < 6) {
-                $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres";
-                header("Location: /hotel-system/views/auth/registro.php");
-                exit();
-            }
-            
-            // Verificar si el username ya existe
-            $this->usuario->username = $username;
-            if ($this->usuario->existeUsername()) {
-                $_SESSION['error'] = "El nombre de usuario ya está en uso";
-                header("Location: /hotel-system/views/auth/registro.php");
-                exit();
-            }
-            
             try {
+                // Obtener datos del formulario
+                $username = $_POST['username'] ?? '';
+                $password = $_POST['password'] ?? '';
+                $password_confirm = $_POST['password_confirm'] ?? '';
+                $nombre = trim($_POST['nombre'] ?? '');
+                $apellido = trim($_POST['apellido'] ?? '');
+                $cedula = trim($_POST['cedula'] ?? '');
+                $telefono = trim($_POST['telefono'] ?? '');
+                $email = trim($_POST['email'] ?? '');
+                $direccion = trim($_POST['direccion'] ?? '');
+                $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
+
+                // Validaciones
+                if (empty($username) || empty($password) || empty($password_confirm) || empty($nombre) || empty($apellido) || empty($cedula) || empty($telefono) || empty($email) || empty($fecha_nacimiento)) {
+                    $_SESSION['error'] = "Todos los campos son obligatorios";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $_SESSION['error'] = "El email no es válido";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!Validator::nombreValido($nombre)) {
+                    $_SESSION['error'] = "El nombre solo puede contener letras y espacios";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!Validator::nombreValido($apellido)) {
+                    $_SESSION['error'] = "El apellido solo puede contener letras y espacios";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!Validator::cedulaValida($cedula)) {
+                    $_SESSION['error'] = "La cédula solo puede contener números y guiones";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!Validator::telefonoValido($telefono)) {
+                    $_SESSION['error'] = "El teléfono solo puede contener números y caracteres de formato";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (!$this->esMayorDeEdadSeguro($fecha_nacimiento, 18)) {
+                    $_SESSION['error'] = "Debes ser mayor de edad (18+ años) para crear una cuenta";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if ($password !== $password_confirm) {
+                    $_SESSION['error'] = "Las contraseñas no coinciden";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                if (strlen($password) < 6) {
+                    $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
+                // Verificar si el username ya existe
+                $this->usuario->username = $username;
+                if ($this->usuario->existeUsername()) {
+                    $_SESSION['error'] = "El nombre de usuario ya está en uso";
+                    header("Location: ../views/auth/registro.php");
+                    exit();
+                }
+
                 $this->db->beginTransaction();
 
                 // Crear usuario
@@ -185,18 +238,66 @@ class UsuarioController {
                 $this->db->commit();
 
                 $_SESSION['success'] = "Cuenta creada correctamente. Ya puedes iniciar sesión y hacer tu pre-reserva.";
-                header("Location: /hotel-system/views/auth/login.php");
+                header("Location: ../views/auth/login.php");
                 exit();
 
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 if ($this->db->inTransaction()) {
                     $this->db->rollBack();
                 }
-                $_SESSION['error'] = $e->getMessage();
-                header("Location: /hotel-system/views/auth/registro.php");
+                $_SESSION['error'] = "No se pudo completar el registro. " . $e->getMessage();
+                header("Location: ../views/auth/registro.php");
                 exit();
             }
         }
+    }
+
+    /**
+     * Permite a un cliente autenticado cambiar su contraseña.
+     */
+    public function cambiarPasswordCliente() {
+        if (!isset($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'cliente') {
+            header("Location: ../views/auth/login.php");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $password_actual = $_POST['password_actual'] ?? '';
+            $password_nueva = $_POST['password_nueva'] ?? '';
+            $password_confirm = $_POST['password_confirm'] ?? '';
+
+            if (empty($password_actual) || empty($password_nueva) || empty($password_confirm)) {
+                $_SESSION['error'] = "Todos los campos son obligatorios";
+                header("Location: ../views/cliente/cambiar_password.php");
+                exit();
+            }
+
+            if (strlen($password_nueva) < 6) {
+                $_SESSION['error'] = "La nueva contraseña debe tener al menos 6 caracteres";
+                header("Location: ../views/cliente/cambiar_password.php");
+                exit();
+            }
+
+            if ($password_nueva !== $password_confirm) {
+                $_SESSION['error'] = "La confirmación no coincide con la nueva contraseña";
+                header("Location: ../views/cliente/cambiar_password.php");
+                exit();
+            }
+
+            $this->usuario->usuario_id = $_SESSION['usuario_id'];
+            if (!$this->usuario->cambiarPassword($password_actual, $password_nueva)) {
+                $_SESSION['error'] = "La contraseña actual no es correcta";
+                header("Location: ../views/cliente/cambiar_password.php");
+                exit();
+            }
+
+            $_SESSION['success'] = "Contraseña actualizada correctamente";
+            header("Location: ../views/cliente/cambiar_password.php");
+            exit();
+        }
+
+        header("Location: ../views/cliente/cambiar_password.php");
+        exit();
     }
 }
 
@@ -214,8 +315,11 @@ if (isset($_GET['action'])) {
         case 'registrar':
             $controller->registrar();
             break;
+        case 'cambiar_password':
+            $controller->cambiarPasswordCliente();
+            break;
         default:
-            header("Location: /hotel-system/views/auth/login.php");
+            header("Location: ../views/auth/login.php");
             exit();
     }
 } else {

@@ -1,6 +1,7 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: /hotel-system/views/auth/login.php"); exit(); }
+<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
+$fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -10,12 +11,12 @@ $rol = $_SESSION['rol'];
     <title>Nuevo Usuario Cliente - HotelManager</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Segoe UI',sans-serif;background:#f5f7fa}
-        .sidebar{width:260px;background:#2c3e50;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
+        body{font-family:'Segoe UI',sans-serif;background:#f3f8fb}
+        .sidebar{width:260px;background:#12355b;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
         .logo-section{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px}
         .logo{font-size:24px;font-weight:bold;margin-bottom:5px}
         .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px}
-        .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#3498db}
+        .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#1b98e0}
         .main-content{margin-left:260px}
         .header{background:white;padding:20px 30px;box-shadow:0 2px 5px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
         .content-area{padding:30px}
@@ -33,7 +34,7 @@ $rol = $_SESSION['rol'];
         .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
         .btn{padding:10px 16px;border-radius:8px;border:1px solid;cursor:pointer;text-decoration:none;font-size:14px}
         .btn-cancel{background:#f8f9fa;color:#555;border-color:#ddd}
-        .btn-save{background:#27ae60;color:white;border-color:#27ae60}
+        .btn-save{background:#2a9d8f;color:white;border-color:#2a9d8f}
     </style>
 </head>
 <body>
@@ -42,9 +43,9 @@ $rol = $_SESSION['rol'];
         <div class="logo">🏨 HotelManager</div>
         <div style="font-size:13px;opacity:.8">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item active">👥 Clientes</a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesión</a>
+    <a href="../../controllers/ClienteController.php" class="menu-item active">👥 Clientes</a>
+    <a href="../../controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
@@ -72,32 +73,32 @@ $rol = $_SESSION['rol'];
             <h2>Datos del nuevo cliente</h2>
             <div class="sub">Esta opción no requiere que el cliente ya exista en el sistema.</div>
 
-            <form method="POST" action="/hotel-system/controllers/ClienteController.php?accion=crear_usuario_nuevo">
+            <form method="POST" action="../../controllers/ClienteController.php?accion=crear_usuario_nuevo">
                 <div class="section-title">Información personal</div>
                 <div class="grid">
                     <div>
                         <label>Nombre *</label>
-                        <input type="text" name="nombre" required value="<?= htmlspecialchars($datos['nombre'] ?? '') ?>">
+                        <input type="text" name="nombre" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+" title="Solo letras y espacios" value="<?= htmlspecialchars($datos['nombre'] ?? '') ?>">
                     </div>
                     <div>
                         <label>Apellido *</label>
-                        <input type="text" name="apellido" required value="<?= htmlspecialchars($datos['apellido'] ?? '') ?>">
+                        <input type="text" name="apellido" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+" title="Solo letras y espacios" value="<?= htmlspecialchars($datos['apellido'] ?? '') ?>">
                     </div>
                     <div>
                         <label>Cédula *</label>
-                        <input type="text" name="cedula" required value="<?= htmlspecialchars($datos['cedula'] ?? '') ?>">
+                        <input type="text" name="cedula" required pattern="[0-9\s-]+" title="Solo números y guiones" value="<?= htmlspecialchars($datos['cedula'] ?? '') ?>">
                     </div>
                     <div>
                         <label>Teléfono *</label>
-                        <input type="text" name="telefono" required value="<?= htmlspecialchars($datos['telefono'] ?? '') ?>">
+                        <input type="text" name="telefono" required pattern="[0-9\s+\-()]+" title="Solo números y caracteres de formato" value="<?= htmlspecialchars($datos['telefono'] ?? '') ?>">
                     </div>
                     <div>
                         <label>Email *</label>
                         <input type="email" name="email" required value="<?= htmlspecialchars($datos['email'] ?? '') ?>">
                     </div>
                     <div>
-                        <label>Fecha de nacimiento</label>
-                        <input type="date" name="fecha_nacimiento" value="<?= htmlspecialchars($datos['fecha_nacimiento'] ?? '') ?>">
+                        <label>Fecha de nacimiento *</label>
+                        <input type="date" name="fecha_nacimiento" required max="<?= $fecha_max_mayoria_edad ?>" value="<?= htmlspecialchars($datos['fecha_nacimiento'] ?? '') ?>">
                     </div>
                     <div class="full">
                         <label>Dirección</label>
@@ -122,7 +123,7 @@ $rol = $_SESSION['rol'];
                 </div>
 
                 <div class="actions">
-                    <a class="btn btn-cancel" href="/hotel-system/controllers/ClienteController.php">Cancelar</a>
+                    <a class="btn btn-cancel" href="../../controllers/ClienteController.php">Cancelar</a>
                     <button class="btn btn-save" type="submit">Crear Usuario Cliente</button>
                 </div>
             </form>
@@ -131,3 +132,4 @@ $rol = $_SESSION['rol'];
 </div>
 </body>
 </html>
+

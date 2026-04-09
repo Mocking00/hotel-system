@@ -76,11 +76,11 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
     <title>Mi Panel - HotelManager</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f5f7fa; }
+        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f3f8fb; }
 
         /* ── Header ── */
         .header {
-            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            background:linear-gradient(135deg,#1b98e0 0%,#0b2545 100%);
             color:white; padding:0 30px;
             display:flex; justify-content:space-between; align-items:center;
             height:65px; position:sticky; top:0; z-index:100;
@@ -104,7 +104,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             border:1.5px solid rgba(255,255,255,.5); color:white;
             border-radius:8px; font-size:13px; text-decoration:none; transition:all .2s;
         }
-        .btn-logout:hover { background:white; color:#667eea; }
+        .btn-logout:hover { background:white; color:#1b98e0; }
 
         /* ── Layout ── */
         .container { max-width:1300px; margin:30px auto; padding:0 24px; }
@@ -118,12 +118,12 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
         .welcome-card h1 { color:#333; font-size:24px; margin-bottom:5px; }
         .welcome-card p  { color:#888; font-size:14px; }
         .btn-nueva-reserva {
-            padding:12px 26px; background:linear-gradient(135deg,#667eea,#764ba2);
+            padding:12px 26px; background:linear-gradient(135deg,#1b98e0,#0b2545);
             color:white; border:none; border-radius:10px; font-size:14px;
             font-weight:600; text-decoration:none; white-space:nowrap;
-            box-shadow:0 4px 15px rgba(102,126,234,.4); transition:all .2s;
+            box-shadow:0 4px 15px rgba(27,152,224,.4); transition:all .2s;
         }
-        .btn-nueva-reserva:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,.5); }
+        .btn-nueva-reserva:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(27,152,224,.5); }
 
         /* ── Stats ── */
         .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
@@ -145,13 +145,13 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
         /* ── Tabla reservas ── */
         .table-card { overflow:hidden; margin-bottom:24px; }
         table { width:100%; border-collapse:collapse; }
-        thead { background:#2c3e50; color:white; }
+        thead { background:#12355b; color:white; }
         thead th { padding:12px 14px; text-align:left; font-size:13px; }
         tbody tr { border-bottom:1px solid #f0f0f0; transition:background .2s; }
         tbody tr:hover { background:#fafafa; }
         tbody td { padding:12px 14px; font-size:13px; color:#444; }
         .badge { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-        .btn-ver { padding:4px 12px; background:#e8f4fd; color:#1a73e8; border:1px solid #bee3f8; border-radius:6px; font-size:12px; text-decoration:none; }
+        .btn-ver { padding:4px 12px; background:#e3f4ff; color:#0b6fa4; border:1px solid #a9d9f5; border-radius:6px; font-size:12px; text-decoration:none; }
         .empty-state { text-align:center; padding:40px; color:#bbb; }
         .empty-state span { font-size:40px; display:block; margin-bottom:10px; }
 
@@ -161,15 +161,15 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             border:2px solid #e8edf3; border-radius:10px; padding:16px;
             transition:all .2s; text-align:center;
         }
-        .hab-card:hover { border-color:#667eea; box-shadow:0 4px 15px rgba(102,126,234,.15); transform:translateY(-2px); }
+        .hab-card:hover { border-color:#1b98e0; box-shadow:0 4px 15px rgba(27,152,224,.15); transform:translateY(-2px); }
         .hab-card .hab-icon { font-size:28px; margin-bottom:8px; }
         .hab-card .hab-num  { font-size:16px; font-weight:bold; color:#333; }
         .hab-card .hab-tipo { font-size:12px; color:#888; margin:3px 0; }
-        .hab-card .hab-precio { font-size:15px; font-weight:600; color:#27ae60; margin:6px 0; }
+        .hab-card .hab-precio { font-size:15px; font-weight:600; color:#2a9d8f; margin:6px 0; }
         .hab-card .hab-cap { font-size:11px; color:#aaa; }
         .btn-reservar {
             display:block; margin-top:10px; padding:7px 0;
-            background:linear-gradient(135deg,#667eea,#764ba2);
+            background:linear-gradient(135deg,#1b98e0,#0b2545);
             color:white; border-radius:8px; font-size:12px;
             font-weight:600; text-decoration:none; text-align:center;
         }
@@ -181,7 +181,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
         .perfil-item .val { font-size:14px; color:#333; }
         .perfil-item.full { grid-column:1/-1; }
         .perfil-avatar {
-            width:70px; height:70px; background:linear-gradient(135deg,#667eea,#764ba2);
+            width:70px; height:70px; background:linear-gradient(135deg,#1b98e0,#0b2545);
             border-radius:50%; display:flex; align-items:center; justify-content:center;
             color:white; font-size:26px; font-weight:bold; margin:0 auto 15px;
         }
@@ -218,7 +218,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <div style="font-weight:600;font-size:14px"><?= htmlspecialchars($username) ?></div>
             <div style="font-size:11px;opacity:.8">Cliente</div>
         </div>
-        <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn-logout">
+        <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">
             🚪 Salir
         </a>
     </div>
@@ -232,7 +232,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <h1>¡Bienvenido, <?= htmlspecialchars($cliente_data['nombre'] ?? $username) ?>! 👋</h1>
             <p>Gestiona tus reservas y descubre nuestras habitaciones disponibles.</p>
         </div>
-        <a href="/hotel-system/controllers/ReservaController.php?accion=crear" class="btn-nueva-reserva">
+        <a href="../../controllers/ReservaController.php?accion=crear" class="btn-nueva-reserva">
             ➕ Nueva Reserva
         </a>
     </div>
@@ -283,8 +283,8 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                             <div class="empty-state">
                                 <span>📅</span>
                                 Aún no tienes reservas.<br>
-                                <a href="/hotel-system/controllers/ReservaController.php?accion=crear"
-                                   style="color:#667eea;text-decoration:none;font-weight:600">
+                                <a href="../../controllers/ReservaController.php?accion=crear"
+                                   style="color:#1b98e0;text-decoration:none;font-weight:600">
                                    Haz tu primera reserva →
                                 </a>
                             </div>
@@ -300,14 +300,14 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                             </td>
                             <td><?= date('d/m/Y', strtotime($r['fecha_entrada'])) ?></td>
                             <td><?= date('d/m/Y', strtotime($r['fecha_salida'])) ?></td>
-                            <td style="color:#27ae60;font-weight:600">$<?= number_format($r['precio_total'],2) ?></td>
+                            <td style="color:#2a9d8f;font-weight:600">$<?= number_format($r['precio_total'],2) ?></td>
                             <td>
                                 <span class="badge" style="background:<?= $bc['bg'] ?>;color:<?= $bc['color'] ?>">
                                     <?= $bc['icon'] ?> <?= ucfirst($r['estado']) ?>
                                 </span>
                             </td>
                             <td>
-                                <a href="/hotel-system/controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>"
+                                <a href="../../controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>"
                                    class="btn-ver">Ver</a>
                             </td>
                         </tr>
@@ -333,7 +333,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                             <div class="hab-tipo"><?= ucfirst($h['tipo']) ?> · Piso <?= $h['piso'] ?></div>
                             <div class="hab-precio">$<?= number_format($h['precio_noche'],2) ?>/noche</div>
                             <div class="hab-cap">👤 Capacidad: <?= $h['capacidad'] ?></div>
-                            <a href="/hotel-system/controllers/ReservaController.php?accion=crear&hab=<?= $h['habitacion_id'] ?>"
+                            <a href="../../controllers/ReservaController.php?accion=crear&hab=<?= $h['habitacion_id'] ?>"
                                class="btn-reservar">Reservar</a>
                         </div>
                         <?php endforeach; ?>
@@ -389,27 +389,34 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <!-- Acceso rápido -->
             <div class="section-title">⚡ Acceso Rápido</div>
             <div class="card" style="padding:15px">
-                <a href="/hotel-system/controllers/ReservaController.php?accion=crear"
+                <a href="../../controllers/ReservaController.php?accion=crear"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s;margin-bottom:5px"
-                   onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
+                   onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">➕</span>
                     <div><div style="font-weight:600;font-size:14px">Nueva Reserva</div>
                     <div style="font-size:12px;color:#888">Reserva tu habitación</div></div>
                 </a>
-                <a href="#mis-reservas"
+                     <a href="../../controllers/ReservaController.php"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s;margin-bottom:5px"
-                   onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
+                   onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">📅</span>
                     <div><div style="font-weight:600;font-size:14px">Mis Reservas</div>
                     <div style="font-size:12px;color:#888">Ver historial</div></div>
                 </a>
-                <a href="#habitaciones"
+                     <a href="../../controllers/ReservaController.php?accion=crear"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s"
-                   onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background=''">
+                   onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">🛏️</span>
                     <div><div style="font-weight:600;font-size:14px">Habitaciones</div>
                     <div style="font-size:12px;color:#888">Ver disponibilidad</div></div>
                 </a>
+                    <a href="../cliente/cambiar_password.php"
+                       style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s"
+                       onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
+                        <span style="font-size:20px">🔒</span>
+                        <div><div style="font-weight:600;font-size:14px">Cambiar Contraseña</div>
+                        <div style="font-size:12px;color:#888">Actualizar seguridad de cuenta</div></div>
+                    </a>
             </div>
         </div>
 

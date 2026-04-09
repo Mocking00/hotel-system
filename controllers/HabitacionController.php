@@ -3,11 +3,11 @@ session_start();
 
 // ── Protección de acceso ────────────────────────────────────────────────
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 if (!in_array($_SESSION['rol'], ['administrador', 'recepcionista'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../views/auth/login.php");
     exit();
 }
 
@@ -25,7 +25,7 @@ $accion = $_GET['accion'] ?? 'listar';
 if ($_SESSION['rol'] === 'recepcionista' && $accion !== 'listar') {
     $_SESSION['mensaje']  = 'No tienes permisos para modificar habitaciones.';
     $_SESSION['tipo_msg'] = 'error';
-    header('Location: /hotel-system/controllers/HabitacionController.php');
+    header('Location: ./HabitacionController.php');
     exit;
 }
 
@@ -112,7 +112,7 @@ function accion_crear($hab) {
             if ($hab->crear()) {
                 $_SESSION['mensaje']  = '✅ Habitación creada exitosamente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header('Location: /hotel-system/controllers/HabitacionController.php');
+                header('Location: ./HabitacionController.php');
                 exit;
             } else {
                 $errores[] = 'Error al guardar en la base de datos. Intenta de nuevo.';
@@ -131,7 +131,7 @@ function accion_editar($hab) {
     $id = intval($_GET['id'] ?? 0);
 
     if (!$id) {
-        header('Location: /hotel-system/controllers/HabitacionController.php');
+        header('Location: ./HabitacionController.php');
         exit;
     }
 
@@ -180,7 +180,7 @@ function accion_editar($hab) {
             if ($hab->actualizar()) {
                 $_SESSION['mensaje']  = '✅ Habitación actualizada exitosamente.';
                 $_SESSION['tipo_msg'] = 'success';
-                header('Location: /hotel-system/controllers/HabitacionController.php');
+                header('Location: ./HabitacionController.php');
                 exit;
             } else {
                 $errores[] = 'Error al actualizar. Intenta de nuevo.';
@@ -191,7 +191,7 @@ function accion_editar($hab) {
         // GET: cargar datos actuales de la BD
         $hab->habitacion_id = $id;
         if (!$hab->leerPorId()) {
-            header('Location: /hotel-system/controllers/HabitacionController.php');
+            header('Location: ./HabitacionController.php');
             exit;
         }
         $datos = [
@@ -216,7 +216,7 @@ function accion_eliminar($hab) {
     if ($_SESSION['rol'] !== 'administrador') {
         $_SESSION['mensaje']  = '❌ No tienes permiso para eliminar habitaciones.';
         $_SESSION['tipo_msg'] = 'error';
-        header('Location: /hotel-system/controllers/HabitacionController.php');
+        header('Location: ./HabitacionController.php');
         exit;
     }
 
@@ -232,7 +232,7 @@ function accion_eliminar($hab) {
         }
     }
 
-    header('Location: /hotel-system/controllers/HabitacionController.php');
+    header('Location: ./HabitacionController.php');
     exit;
 }
 
@@ -256,7 +256,7 @@ function accion_estado($hab) {
         }
     }
 
-    header('Location: /hotel-system/controllers/HabitacionController.php');
+    header('Location: ./HabitacionController.php');
     exit;
 }
 ?>

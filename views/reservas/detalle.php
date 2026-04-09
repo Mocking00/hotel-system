@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: /hotel-system/views/auth/login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -8,6 +8,9 @@ $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
 $es_recepcion = $rol === 'recepcionista';
+$dashboard_url = $es_recepcion
+    ? '../views/recepcionista/dashboard.php'
+    : '../views/admin/dashboard.php';
 
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
@@ -26,10 +29,10 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
     <title>Detalle Reserva - HotelManager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; }
 
         .sidebar {
-            width: 260px; background: #2c3e50; color: white;
+            width: 260px; background: #12355b; color: white;
             min-height: 100vh; padding: 20px 0;
             position: fixed; left: 0; top: 0;
         }
@@ -43,14 +46,14 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
-            border-left-color: #3498db;
+            border-left-color: #1b98e0;
         }
 
         .topbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
             color: white; padding: 14px 24px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 3px 14px rgba(102,126,234,0.35);
+            box-shadow: 0 3px 14px rgba(27,152,224,0.35);
         }
         .topbar .left { font-size: 20px; font-weight: 700; }
         .topbar .right { display: flex; align-items: center; gap: 12px; }
@@ -120,7 +123,7 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
             margin-top: 10px;
         }
         .timeline-item { margin-bottom: 14px; }
-        .timeline-item .t-title { font-weight: 700; color: #2c3e50; font-size: 13px; }
+        .timeline-item .t-title { font-weight: 700; color: #12355b; font-size: 13px; }
         .timeline-item .t-val { color: #666; font-size: 13px; margin-top: 2px; }
 
         @media (max-width: 980px) {
@@ -138,20 +141,22 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="/hotel-system/views/admin/dashboard.php" class="menu-item">📊 Dashboard</a>
-    <a href="/hotel-system/controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="/hotel-system/controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
-    <a href="/hotel-system/controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
-    <a href="/hotel-system/controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
-    <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
+    <a href="../../controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
+    <a href="../../controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
+    <a href="../../controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
+    <?php if (!$es_recepcion): ?>
+    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <?php endif; ?>
+    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
 </div>
 <?php else: ?>
 <div class="topbar">
     <div class="left">🏨 Detalle de Reserva</div>
     <div class="right">
         <div><?= htmlspecialchars($username) ?></div>
-        <a href="/hotel-system/views/cliente/dashboard.php" class="btn">Panel</a>
-        <a href="/hotel-system/controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
+        <a href="../views/cliente/dashboard.php" class="btn">Panel</a>
+        <a href="../../controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
     </div>
 </div>
 <?php endif; ?>
@@ -195,7 +200,7 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
                 <div class="meta-row"><div class="label">Salida</div><div class="value"><?= date('d/m/Y', strtotime($reserva_detalle['fecha_salida'])) ?></div></div>
                 <div class="meta-row"><div class="label">Noches</div><div class="value"><?= (int) $reserva_detalle['noches'] ?></div></div>
                 <div class="meta-row"><div class="label">Personas</div><div class="value"><?= (int) $reserva_detalle['numero_personas'] ?></div></div>
-                <div class="meta-row"><div class="label">Total</div><div class="value" style="color:#27ae60;font-weight:700;font-size:18px">$<?= number_format((float) $reserva_detalle['precio_total'], 2) ?></div></div>
+                <div class="meta-row"><div class="label">Total</div><div class="value" style="color:#2a9d8f;font-weight:700;font-size:18px">$<?= number_format((float) $reserva_detalle['precio_total'], 2) ?></div></div>
                 <div class="meta-row"><div class="label">Notas</div><div class="value"><?= !empty($reserva_detalle['notas_especiales']) ? nl2br(htmlspecialchars($reserva_detalle['notas_especiales'])) : '<span style="color:#999">Sin notas especiales</span>' ?></div></div>
             </div>
 
@@ -203,20 +208,20 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
                 <div class="card" style="margin-bottom:20px;">
                     <h2>Acciones</h2>
                     <div class="actions">
-                        <a href="/hotel-system/controllers/ReservaController.php" class="btn btn-back">← Volver al listado</a>
+                        <a href="../../controllers/ReservaController.php" class="btn btn-back">← Volver al listado</a>
 
                         <?php if (!$es_cliente && in_array($reserva_detalle['estado'], ['pendiente','confirmada'])): ?>
                             <?php if (empty($reserva_detalle['fecha_checkin'])): ?>
-                                <a href="/hotel-system/controllers/ReservaController.php?accion=checkin&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                                <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                    class="btn btn-ci" onclick="return confirm('¿Registrar check-in de esta reserva?')">Registrar Check-in</a>
                             <?php elseif (empty($reserva_detalle['fecha_checkout'])): ?>
-                                <a href="/hotel-system/controllers/ReservaController.php?accion=checkout&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                                <a href="../../controllers/ReservaController.php?accion=checkout&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                    class="btn btn-co" onclick="return confirm('¿Registrar check-out de esta reserva?')">Registrar Check-out</a>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php if (!$es_recepcion && in_array($reserva_detalle['estado'], ['pendiente','confirmada']) && empty($reserva_detalle['fecha_checkin'])): ?>
-                            <a href="/hotel-system/controllers/ReservaController.php?accion=cancelar&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                            <a href="../../controllers/ReservaController.php?accion=cancelar&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                class="btn btn-can" onclick="return confirm('¿Cancelar esta reserva?')">Cancelar Reserva</a>
                         <?php endif; ?>
                     </div>
@@ -246,3 +251,4 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
 
 </body>
 </html>
+

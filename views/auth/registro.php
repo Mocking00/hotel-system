@@ -2,6 +2,7 @@
 session_start();
 $error = $_SESSION['error'] ?? '';
 $success = $_SESSION['success'] ?? '';
+$fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
 unset($_SESSION['error'], $_SESSION['success']);
 ?>
 <!DOCTYPE html>
@@ -12,10 +13,10 @@ unset($_SESSION['error'], $_SESSION['success']);
     <title>Registro Cliente - HotelManager</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#1b98e0 0%,#0b2545 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
         .card{background:white;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-width:760px;padding:28px}
-        .title{font-size:28px;font-weight:800;color:#2c3e50;text-align:center;margin-bottom:6px}
-        .sub{font-size:14px;color:#667;text-align:center;margin-bottom:20px}
+        .title{font-size:28px;font-weight:800;color:#12355b;text-align:center;margin-bottom:6px}
+        .sub{font-size:14px;color:#556;text-align:center;margin-bottom:20px}
         .alert{padding:12px 14px;border-radius:8px;margin-bottom:14px;font-size:14px}
         .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
         .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
@@ -23,11 +24,11 @@ unset($_SESSION['error'], $_SESSION['success']);
         .full{grid-column:1/-1}
         label{display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:6px}
         input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px}
-        input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,.18)}
+        input:focus{outline:none;border-color:#1b98e0;box-shadow:0 0 0 3px rgba(27,152,224,.18)}
         .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
         .btn{padding:10px 16px;border-radius:8px;font-size:14px;border:1px solid;cursor:pointer;text-decoration:none}
         .btn-back{background:#f8f9fa;color:#555;border-color:#ddd}
-        .btn-save{background:#667eea;color:white;border-color:#667eea;font-weight:700}
+        .btn-save{background:#1b98e0;color:white;border-color:#1b98e0;font-weight:700}
         @media (max-width:700px){.grid{grid-template-columns:1fr}}
     </style>
 </head>
@@ -44,23 +45,23 @@ unset($_SESSION['error'], $_SESSION['success']);
     <div class="alert alert-success">✅ <?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="/hotel-system/controllers/UsuarioController.php?action=registrar">
+    <form method="POST" action="../../controllers/UsuarioController.php?action=registrar">
         <div class="grid">
             <div>
                 <label>Nombre *</label>
-                <input type="text" name="nombre" required>
+                <input type="text" name="nombre" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+" title="Solo letras y espacios">
             </div>
             <div>
                 <label>Apellido *</label>
-                <input type="text" name="apellido" required>
+                <input type="text" name="apellido" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s'-]+" title="Solo letras y espacios">
             </div>
             <div>
                 <label>Cédula *</label>
-                <input type="text" name="cedula" required>
+                <input type="text" name="cedula" required pattern="[0-9\s-]+" title="Solo números y guiones">
             </div>
             <div>
                 <label>Teléfono *</label>
-                <input type="text" name="telefono" required>
+                <input type="text" name="telefono" required pattern="[0-9\s+\-()]+" title="Solo números y caracteres de formato">
             </div>
             <div class="full">
                 <label>Email *</label>
@@ -71,8 +72,8 @@ unset($_SESSION['error'], $_SESSION['success']);
                 <input type="text" name="direccion">
             </div>
             <div>
-                <label>Fecha de nacimiento</label>
-                <input type="date" name="fecha_nacimiento">
+                <label>Fecha de nacimiento *</label>
+                <input type="date" name="fecha_nacimiento" required max="<?= $fecha_max_mayoria_edad ?>">
             </div>
             <div>
                 <label>Username *</label>
@@ -89,10 +90,11 @@ unset($_SESSION['error'], $_SESSION['success']);
         </div>
 
         <div class="actions">
-            <a class="btn btn-back" href="/hotel-system/views/auth/login.php">Volver al login</a>
+            <a class="btn btn-back" href="../auth/login.php">Volver al login</a>
             <button class="btn btn-save" type="submit">Crear cuenta</button>
         </div>
     </form>
 </div>
 </body>
 </html>
+

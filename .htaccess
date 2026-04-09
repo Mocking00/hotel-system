@@ -1,6 +1,14 @@
 # Activar rewrite engine
 RewriteEngine On
 
+# Variables de entorno para InfinityFree (aplican a todo el proyecto)
+SetEnv DB_HOST "sql111.infinityfree.com"
+SetEnv DB_PORT "3306"
+SetEnv DB_NAME "if0_41615483_hotel_gestion"
+SetEnv DB_USER "if0_41615483"
+SetEnv DB_PASS "ZA6FhjuOWP"
+SetEnv APP_ENV "production"
+
 # Redirigir a index.php si no es un archivo o directorio
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -13,5 +21,4 @@ RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 </FilesMatch>
 
 # Configuración de errores
-php_flag display_errors On
-php_value error_reporting E_ALL
+# En hosting compartido puede no estar permitido usar php_flag/php_value
