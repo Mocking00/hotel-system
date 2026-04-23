@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
     exit();
 }
+
+require_once __DIR__ . '/../../utils/url_helper.php';
 if ($_SESSION['rol'] === 'cliente') {
-    header("Location: ../../controllers/ReservaController.php");
+    header("Location: ./ReservaController.php");
     exit();
 }
 
@@ -152,12 +154,11 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="../views/admin/dashboard.php" class="menu-item">📊 Dashboard</a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
-    <a href="../../controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item active">📈 Reportes</a>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
+    <a href="<?php echo app_url('views/admin/dashboard.php'); ?>" class="menu-item">📊 Dashboard</a>
+    <a href="./HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
+    <a href="./ReservaController.php" class="menu-item">📅 Reservas</a>
+    <a href="./ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item active">📈 Reportes</a>
 </div>
 
 <div class="main-content">
@@ -170,7 +171,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
     </div>
 
     <div class="content-area">
-        <form method="GET" action="../../controllers/ReservaController.php">
+        <form method="GET" action="./ReservaController.php">
             <input type="hidden" name="accion" value="reportes">
             <div class="filters">
                 <div class="filter-group">
@@ -193,7 +194,7 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
                     <input type="date" name="fecha_hasta" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
                 </div>
                 <button type="submit" class="btn-filter">Aplicar</button>
-                <a href="../../controllers/ReservaController.php?accion=reportes" class="btn-clear">Limpiar</a>
+                <a href="./ReservaController.php?accion=reportes" class="btn-clear">Limpiar</a>
             </div>
         </form>
 
@@ -308,4 +309,6 @@ $promedio_noches = (float) ($kpis['promedio_noches'] ?? 0);
 
 </body>
 </html>
+
+
 

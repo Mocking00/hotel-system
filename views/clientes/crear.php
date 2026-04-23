@@ -1,4 +1,5 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+﻿<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+require_once __DIR__ . '/../../utils/url_helper.php';
 $username = $_SESSION['username'];
 $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
 <!DOCTYPE html>
@@ -49,12 +50,11 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
         <div class="logo">🏨 HotelManager</div>
         <div class="role" style="font-size:13px;opacity:.8">Panel de Administración</div>
     </div>
-    <a href="../admin/dashboard.php" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
-    <a href="../../controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
+    <a href="<?php echo app_url('views/admin/dashboard.php'); ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
+    <a href="./ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
+    <a href="./ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
 </div>
 
 <div class="main-content">
@@ -69,13 +69,13 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
                 <div style="font-size:12px;color:#666">Administrador</div>
             </div>
-            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="./UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
     <div class="content-area">
         <div class="breadcrumb">
-            <a href="../../controllers/ClienteController.php">👥 Clientes</a> › Nuevo Cliente
+            <a href="./ClienteController.php">👥 Clientes</a> › Nuevo Cliente
         </div>
 
         <?php if (!empty($errores)): ?>
@@ -85,7 +85,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
         </div>
         <?php endif; ?>
 
-        <form method="POST" action="../../controllers/ClienteController.php?accion=crear">
+        <form method="POST" action="./ClienteController.php?accion=crear">
         <div class="form-card">
             <h2>👤 Datos del Cliente</h2>
             <div class="form-grid">
@@ -120,7 +120,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
                 </div>
             </div>
             <div class="form-footer">
-                <a href="../../controllers/ClienteController.php" class="btn-cancel">✕ Cancelar</a>
+                <a href="./ClienteController.php" class="btn-cancel">✕ Cancelar</a>
                 <button type="submit" class="btn-save">💾 Guardar Cliente</button>
             </div>
         </div>
@@ -129,3 +129,5 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
 </div>
 </body>
 </html>
+
+

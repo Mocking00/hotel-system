@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../utils/url_helper.php';
 
 // Si ya hay sesión activa, redirigir
 if (isset($_SESSION['usuario_id'])) {
@@ -229,7 +230,7 @@ unset($_SESSION['success']);
             </div>
         <?php endif; ?>
         
-        <form method="POST" action="../../controllers/UsuarioController.php?action=login">
+        <form method="POST" action="<?php echo app_url('controllers/UsuarioController.php?action=login'); ?>">
             <div class="form-group">
                 <label for="username">Usuario</label>
                 <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required autofocus>
@@ -253,7 +254,7 @@ unset($_SESSION['success']);
         <div class="divider">o</div>
         
         <div class="register-link">
-            ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
+            ¿No tienes cuenta? <a href="<?php echo app_url('views/auth/registro.php'); ?>">Regístrate aquí</a>
         </div>
         
     </div>

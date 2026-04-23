@@ -4,11 +4,20 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
     exit();
 }
+$requireUrlHelper = __DIR__ . '/../../utils/url_helper.php';
+require_once $requireUrlHelper;
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $solo_lectura = $rol === 'recepcionista';
 $es_admin = $rol === 'administrador';
-$dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcionista/dashboard.php';
+$appBase = app_base_path();
+
+$dashboard_url = $appBase . ($es_admin ? '/views/admin/dashboard.php' : '/views/recepcionista/dashboard.php');
+$habitacionesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/HabitacionController.php';
+$reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php';
+$clientesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php';
+$reportesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php?accion=reportes';
+$logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
 $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
 ?>
 <!DOCTYPE html>
@@ -159,17 +168,14 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
     <a href="<?= htmlspecialchars($dashboard_url) ?>" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item active">
+    <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="../../controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
     <?php if ($es_admin): ?>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
+    <a href="<?= htmlspecialchars($reportesUrl) ?>" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
     <?php endif; ?>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">
-        <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
-    </a>
 </div>
 
 <div class="main-content">
@@ -186,7 +192,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
                     <div style="font-size:12px;color:#666;"><?= ucfirst($_SESSION['rol']) ?></div>
                 </div>
             </div>
-            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="<?= htmlspecialchars($logoutUrl) ?>" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
@@ -201,13 +207,13 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
         <div class="toolbar">
             <h2>Habitaciones registradas</h2>
             <?php if (!$solo_lectura): ?>
-            <a href="../../controllers/HabitacionController.php?accion=crear" class="btn-primary">
+            <a href="<?= htmlspecialchars($habitacionesUrl) ?>?accion=crear" class="btn-primary">
                 ➕ Nueva Habitación
             </a>
             <?php endif; ?>
         </div>
 
-        <form method="GET" action="../../controllers/HabitacionController.php">
+        <form method="GET" action="<?= htmlspecialchars($habitacionesUrl) ?>">
             <input type="hidden" name="accion" value="listar">
             <div class="filters">
                 <div class="filter-group">
@@ -229,7 +235,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
                     </select>
                 </div>
                 <button type="submit" class="btn-filter">🔍 Filtrar</button>
-                <a href="../../controllers/HabitacionController.php" class="btn-clear">✕ Limpiar</a>
+                <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="btn-clear">✕ Limpiar</a>
             </div>
         </form>
 
@@ -276,7 +282,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
                         <td style="text-align:center;white-space:nowrap;">
 
                                      <?php if (!$solo_lectura): ?>
-                                     <a href="../../controllers/HabitacionController.php?accion=editar&id=<?= $h['habitacion_id'] ?>"
+                                     <a href="<?= htmlspecialchars($habitacionesUrl) ?>?accion=editar&id=<?= $h['habitacion_id'] ?>"
                                          class="btn-edit">✏️ Editar</a>
                                      <?php endif; ?>
 
@@ -287,7 +293,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
                                     <div class="dropdown-header">Cambiar a:</div>
                                     <?php foreach (['disponible','ocupada','mantenimiento'] as $e):
                                         if ($e === $h['estado']) continue; ?>
-                                    <a href="../../controllers/HabitacionController.php?accion=estado&id=<?= $h['habitacion_id'] ?>&nuevo_estado=<?= $e ?>">
+                                    <a href="<?= htmlspecialchars($habitacionesUrl) ?>?accion=estado&id=<?= $h['habitacion_id'] ?>&nuevo_estado=<?= $e ?>">
                                         <?= ucfirst($e) ?>
                                     </a>
                                     <?php endforeach; ?>
@@ -296,7 +302,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
                             <?php endif; ?>
 
                             <?php if ($_SESSION['rol'] === 'administrador'): ?>
-                            <a href="../../controllers/HabitacionController.php?accion=eliminar&id=<?= $h['habitacion_id'] ?>"
+                                     <a href="<?= htmlspecialchars($habitacionesUrl) ?>?accion=eliminar&id=<?= $h['habitacion_id'] ?>"
                                class="btn-delete"
                                onclick="return confirm('¿Eliminar habitación <?= htmlspecialchars($h['numero']) ?>?\nEsta acción no se puede deshacer.')">
                                🗑️

@@ -1,9 +1,11 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+﻿<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+require_once __DIR__ . '/../../utils/url_helper.php';
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_admin = $rol === 'administrador';
 $es_recepcion = $rol === 'recepcionista';
-$dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcionista/dashboard.php';
+$appBase = app_base_path();
+$dashboard_url = $es_admin ? $appBase . '/views/admin/dashboard.php' : $appBase . '/views/recepcionista/dashboard.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -66,13 +68,12 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
     <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
-    <a href="../../controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
+    <a href="./ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
+    <a href="./ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
     <?php if ($es_admin): ?>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
     <?php endif; ?>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
@@ -87,7 +88,7 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
                 <div style="font-size:12px;color:#666"><?= ucfirst(htmlspecialchars($rol)) ?></div>
             </div>
-            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="./UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
@@ -99,14 +100,14 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
         <div class="toolbar">
             <h2>Clientes registrados</h2>
             <?php if ($es_admin): ?>
-            <a href="../../controllers/ClienteController.php?accion=crear" class="btn-primary">➕ Nuevo Cliente</a>
+            <a href="./ClienteController.php?accion=crear" class="btn-primary">➕ Nuevo Cliente</a>
             <?php elseif ($es_recepcion): ?>
-            <a href="../../controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-primary">🔐 Nuevo Usuario Cliente</a>
+            <a href="./ClienteController.php?accion=crear_usuario_nuevo" class="btn-primary">🔐 Nuevo Usuario Cliente</a>
             <?php endif; ?>
         </div>
 
         <!-- Buscador -->
-        <form method="GET" action="../../controllers/ClienteController.php">
+        <form method="GET" action="./ClienteController.php">
             <input type="hidden" name="accion" value="listar">
             <div class="filter-bar">
                 <div class="filter-group">
@@ -115,7 +116,7 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
                            value="<?= htmlspecialchars($buscar ?? '') ?>">
                 </div>
                 <button type="submit" class="btn-filter">🔍 Buscar</button>
-                <a href="../../controllers/ClienteController.php" class="btn-clear">✕ Limpiar</a>
+                <a href="./ClienteController.php" class="btn-clear">✕ Limpiar</a>
             </div>
         </form>
 
@@ -160,17 +161,17 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
                         </td>
                         <td style="color:#888;font-size:12px"><?= date('d/m/Y', strtotime($c['fecha_registro'])) ?></td>
                         <td style="text-align:center;white-space:nowrap">
-                                     <a href="../../controllers/ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
+                                     <a href="./ClienteController.php?accion=detalle&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-detail">👁 Ver</a>
 
                                      <?php if ($es_admin): ?>
-                                     <a href="../../controllers/ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
-                                     <a href="../../controllers/ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
+                                     <a href="./ClienteController.php?accion=editar&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">✏️ Editar</a>
+                                     <a href="./ClienteController.php?accion=eliminar&id=<?= $c['cliente_id'] ?>"
                                          class="btn-sm btn-del"
                                          onclick="return confirm('¿Eliminar a <?= htmlspecialchars($c['nombre'].' '.$c['apellido']) ?>? Esta acción no se puede deshacer.')">🗑</a>
                                      <?php endif; ?>
 
                                      <?php if ($es_recepcion && empty($c['username'])): ?>
-                                     <a href="../../controllers/ClienteController.php?accion=crear_usuario&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">🔐 Usuario</a>
+                                     <a href="./ClienteController.php?accion=crear_usuario&id=<?= $c['cliente_id'] ?>" class="btn-sm btn-edit">🔐 Usuario</a>
                                      <?php endif; ?>
                         </td>
                     </tr>
@@ -184,3 +185,5 @@ $dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcio
 </div>
 </body>
 </html>
+
+

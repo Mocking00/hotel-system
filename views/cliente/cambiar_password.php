@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../../utils/url_helper.php';
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
     exit();
@@ -47,7 +49,7 @@ $username = $_SESSION['username'];
     <div class="card">
         <div class="top">
             <div class="title">Seguridad de Cuenta</div>
-            <a class="btn btn-back" href="../cliente/dashboard.php">Volver</a>
+            <a class="btn btn-back" href="<?php echo app_url('views/cliente/dashboard.php'); ?>">Volver</a>
         </div>
         <div class="sub">Usuario: <strong><?= htmlspecialchars($username) ?></strong>. Cambia tu contraseña para mantener tu cuenta segura.</div>
 
@@ -59,7 +61,7 @@ $username = $_SESSION['username'];
         <div class="alert alert-success">✅ <?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="../../controllers/UsuarioController.php?action=cambiar_password">
+        <form method="POST" action="<?php echo app_url('controllers/UsuarioController.php?action=cambiar_password'); ?>">
             <label>Contraseña actual *</label>
             <input type="password" name="password_actual" required>
 
@@ -70,7 +72,7 @@ $username = $_SESSION['username'];
             <input type="password" name="password_confirm" minlength="6" required>
 
             <div class="actions">
-                <a class="btn btn-back" href="../cliente/dashboard.php">Cancelar</a>
+                <a class="btn btn-back" href="<?php echo app_url('views/cliente/dashboard.php'); ?>">Cancelar</a>
                 <button class="btn btn-save" type="submit">Actualizar contraseña</button>
             </div>
         </form>

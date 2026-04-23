@@ -1,9 +1,11 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+﻿<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+require_once __DIR__ . '/../../utils/url_helper.php';
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_admin = $rol === 'administrador';
 $es_recepcion = $rol === 'recepcionista';
-$dashboard_url = $es_admin ? '../views/admin/dashboard.php' : '../views/recepcionista/dashboard.php';
+$appBase = app_base_path();
+$dashboard_url = $es_admin ? $appBase . '/views/admin/dashboard.php' : $appBase . '/views/recepcionista/dashboard.php';
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
     'confirmada' => ['bg'=>'#d4edda','color'=>'#155724', 'icon'=>'✅'],
@@ -83,13 +85,12 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
         <div style="font-size:13px;opacity:.8">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
     <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
-    <a href="../../controllers/ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
+    <a href="./ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
+    <a href="./ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
     <?php if ($es_admin): ?>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
     <?php endif; ?>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item"><span class="menu-icon">🚪</span>Cerrar Sesión</a>
 </div>
 
 <div class="main-content">
@@ -104,13 +105,13 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
                 <div style="font-weight:600;color:#333"><?= htmlspecialchars($username) ?></div>
                 <div style="font-size:12px;color:#666"><?= ucfirst(htmlspecialchars($rol)) ?></div>
             </div>
-            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="./UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
     <div class="content-area">
         <div class="breadcrumb">
-            <a href="../../controllers/ClienteController.php">👥 Clientes</a> ›
+            <a href="./ClienteController.php">👥 Clientes</a> ›
             <?= htmlspecialchars($datos['nombre'].' '.$datos['apellido']) ?>
         </div>
 
@@ -192,7 +193,7 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
                                 <td><?= date('d/m/Y', strtotime($r['fecha_salida'])) ?></td>
                                 <td style="color:#2a9d8f;font-weight:600">$<?= number_format($r['precio_total'],2) ?></td>
                                 <td><span class="badge" style="background:<?= $bc['bg'] ?>;color:<?= $bc['color'] ?>"><?= $bc['icon'] ?> <?= ucfirst($r['estado']) ?></span></td>
-                                <td><a href="../../controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a></td>
+                                <td><a href="./ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a></td>
                             </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -234,21 +235,21 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
                     <div class="card-body">
                         <div class="action-btns">
                             <?php if ($es_admin): ?>
-                            <a href="../../controllers/ClienteController.php?accion=editar&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-edit">✏️ Editar Cliente</a>
-                            <a href="../../controllers/ClienteController.php?accion=eliminar&id=<?= $datos['cliente_id'] ?>"
+                            <a href="./ClienteController.php?accion=editar&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-edit">✏️ Editar Cliente</a>
+                            <a href="./ClienteController.php?accion=eliminar&id=<?= $datos['cliente_id'] ?>"
                                class="btn-action btn-del"
                                onclick="return confirm('¿Eliminar cliente? No se puede deshacer.')">🗑️ Eliminar</a>
                             <?php endif; ?>
 
                             <?php if ($es_recepcion && empty($datos['username'])): ?>
-                            <a href="../../controllers/ClienteController.php?accion=crear_usuario&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-reserva">🔐 Crear Usuario Cliente</a>
+                            <a href="./ClienteController.php?accion=crear_usuario&id=<?= $datos['cliente_id'] ?>" class="btn-action btn-reserva">🔐 Crear Usuario Cliente</a>
                             <?php endif; ?>
 
                             <?php if ($es_recepcion): ?>
-                            <a href="../../controllers/ClienteController.php?accion=crear_usuario_nuevo" class="btn-action btn-reserva">➕ Nuevo Usuario Cliente</a>
+                            <a href="./ClienteController.php?accion=crear_usuario_nuevo" class="btn-action btn-reserva">➕ Nuevo Usuario Cliente</a>
                             <?php endif; ?>
 
-                            <a href="../../controllers/ClienteController.php" class="btn-action btn-back">← Volver al listado</a>
+                            <a href="./ClienteController.php" class="btn-action btn-back">← Volver al listado</a>
                         </div>
                     </div>
                 </div>
@@ -258,3 +259,5 @@ $total_gastado = array_sum(array_column(array_filter($reservas, fn($r) => $r['es
 </div>
 </body>
 </html>
+
+

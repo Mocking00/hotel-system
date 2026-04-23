@@ -1,4 +1,5 @@
-<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+﻿<?php if (!isset($_SESSION['usuario_id'])) { header("Location: ../auth/login.php"); exit(); }
+require_once __DIR__ . '/../../utils/url_helper.php';
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
@@ -43,9 +44,8 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
         <div class="logo">🏨 HotelManager</div>
         <div style="font-size:13px;opacity:.8">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
-    <a href="../../controllers/ClienteController.php" class="menu-item active">👥 Clientes</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item">📅 Reservas</a>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesión</a>
+    <a href="./ClienteController.php" class="menu-item active">👥 Clientes</a>
+    <a href="./ReservaController.php" class="menu-item">📅 Reservas</a>
 </div>
 
 <div class="main-content">
@@ -73,7 +73,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
             <h2>Datos del nuevo cliente</h2>
             <div class="sub">Esta opción no requiere que el cliente ya exista en el sistema.</div>
 
-            <form method="POST" action="../../controllers/ClienteController.php?accion=crear_usuario_nuevo">
+            <form method="POST" action="./ClienteController.php?accion=crear_usuario_nuevo">
                 <div class="section-title">Información personal</div>
                 <div class="grid">
                     <div>
@@ -123,7 +123,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
                 </div>
 
                 <div class="actions">
-                    <a class="btn btn-cancel" href="../../controllers/ClienteController.php">Cancelar</a>
+                    <a class="btn btn-cancel" href="./ClienteController.php">Cancelar</a>
                     <button class="btn btn-save" type="submit">Crear Usuario Cliente</button>
                 </div>
             </form>
@@ -132,4 +132,6 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
 </div>
 </body>
 </html>
+
+
 

@@ -12,20 +12,16 @@ if ($_SESSION['rol'] !== 'recepcionista') {
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/Reserva.php';
+require_once __DIR__ . '/../../utils/url_helper.php';
 
 // Construye una URL absoluta al dashboard para evitar bucles por rutas relativas.
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-$appBase = '';
-$marker = '/views/recepcionista/dashboard.php';
-$pos = strpos($scriptName, $marker);
-if ($pos !== false) {
-    $appBase = substr($scriptName, 0, $pos);
-}
+$appBase = app_base_path();
 $dashboardUrl = ($appBase !== '' ? $appBase : '') . '/views/recepcionista/dashboard.php';
 $reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php';
 $habitacionesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/HabitacionController.php';
 $clientesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php';
 $logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
+$crearUsuarioClienteUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php?accion=crear_usuario_nuevo';
 
 $database = new Database();
 $db       = $database->getConnection();
@@ -183,9 +179,6 @@ $badge = [
     <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item">
         <span class="menu-icon">👥</span><span>Clientes</span>
     </a>
-    <a href="<?= htmlspecialchars($logoutUrl) ?>" class="menu-item">
-        <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
-    </a>
 </div>
 
 <div class="main-content">
@@ -280,13 +273,13 @@ $badge = [
                                 <td><?= date('d/m', strtotime($r['fecha_salida'])) ?></td>
                                 <td><span class="badge" style="background:<?= $bc['bg'] ?>;color:<?= $bc['color'] ?>"><?= $bc['icon'] ?> <?= ucfirst($r['estado']) ?></span></td>
                                 <td style="white-space:nowrap">
-                                    <a href="../../controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
+                                                <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=detalle&id=<?= $r['reserva_id'] ?>" class="btn-sm btn-det">Ver</a>
                                     <?php if (empty($r['fecha_checkin'])): ?>
-                                    <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= $r['reserva_id'] ?>"
+                                                <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=checkin&id=<?= $r['reserva_id'] ?>"
                                        class="btn-sm btn-ci"
                                        onclick="return confirm('¿Check-in?')">CI</a>
                                     <?php else: ?>
-                                    <a href="../../controllers/ReservaController.php?accion=checkout&id=<?= $r['reserva_id'] ?>"
+                                                <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=checkout&id=<?= $r['reserva_id'] ?>"
                                        class="btn-sm btn-co"
                                        onclick="return confirm('¿Check-out?')">CO</a>
                                     <?php endif; ?>
@@ -322,7 +315,7 @@ $badge = [
                                 <?php if (!empty($ci['fecha_checkin'])): ?>
                                     <span class="ci-hecho">✅ Hecho</span>
                                 <?php else: ?>
-                                    <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= $ci['reserva_id'] ?>"
+                                                <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=checkin&id=<?= $ci['reserva_id'] ?>"
                                        class="btn-sm btn-ci"
                                        onclick="return confirm('¿Check-in para <?= htmlspecialchars($ci['nombre_cliente']) ?>?')">
                                        ⬇ CI
@@ -337,14 +330,14 @@ $badge = [
                 <!-- Acceso rápido -->
                 <div class="section-title" style="margin-bottom:12px">⚡ Acciones de Recepción</div>
                 <div class="card" style="padding:12px">
-                    <a href="../../controllers/ClienteController.php?accion=crear_usuario_nuevo"
+                          <a href="<?= htmlspecialchars($crearUsuarioClienteUrl) ?>"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333;margin-bottom:4px"
                        onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                         <span style="font-size:20px">🔐</span>
                         <div><div style="font-weight:600;font-size:13px">Crear Usuario Cliente</div>
                         <div style="font-size:11px;color:#888">Alta directa de cliente con credenciales</div></div>
                     </a>
-                    <a href="../../controllers/ReservaController.php"
+                          <a href="<?= htmlspecialchars($reservasUrl) ?>"
                        style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;text-decoration:none;color:#333"
                        onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                         <span style="font-size:20px">✅</span>

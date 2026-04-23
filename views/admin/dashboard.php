@@ -3,9 +3,49 @@ session_start();
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/Habitacion.php';
+require_once __DIR__ . '/../../utils/url_helper.php';
  
 $database = new Database();
 $db = $database->getConnection();
+
+if (!$db) {
+    http_response_code(500);
+    ?>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Error de conexion - HotelManager</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f3f8fb; margin: 0; }
+            .wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+            .card { background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); max-width: 640px; width: 100%; padding: 24px; }
+            h1 { margin: 0 0 10px; font-size: 22px; color: #12355b; }
+            p { margin: 0 0 10px; color: #444; line-height: 1.5; }
+            ul { margin: 10px 0 0 20px; color: #444; }
+            .muted { color: #666; font-size: 14px; }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="card">
+                <h1>No se pudo conectar a la base de datos</h1>
+                <p>El panel no puede cargarse porque la conexion PDO devolvio nulo.</p>
+                <p class="muted">Verifica lo siguiente:</p>
+                <ul>
+                    <li>MySQL de XAMPP esta iniciado.</li>
+                    <li>Existe la base de datos <strong>hotel_gestion</strong>.</li>
+                    <li>Usuario/clave en <strong>config/database.php</strong> son correctos para tu entorno.</li>
+                </ul>
+            </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit();
+}
+
 $hab = new Habitacion($db);
  
 $total_hab     = $hab->leerTodas()->rowCount();
@@ -35,10 +75,7 @@ $total_clientes = $stmt->fetchColumn();
 $username = $_SESSION['username'];
 
 // URLs absolutas dentro de la app para evitar problemas con rutas relativas.
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-$marker = '/views/admin/dashboard.php';
-$pos = strpos($scriptName, $marker);
-$appBase = $pos !== false ? substr($scriptName, 0, $pos) : '';
+$appBase = app_base_path();
 
 $urlAdminDashboard = $appBase . '/views/admin/dashboard.php';
 $urlHabitaciones = $appBase . '/controllers/HabitacionController.php';
@@ -174,10 +211,6 @@ $urlLogout = $appBase . '/controllers/UsuarioController.php?action=logout';
         <a href="<?= htmlspecialchars($urlReportes) ?>" class="menu-item">
             <span class="menu-icon">📈</span>
             <span>Reportes</span>
-        </a>
-        <a href="<?= htmlspecialchars($urlLogout) ?>" class="menu-item">
-            <span class="menu-icon">🚪</span>
-            <span>Cerrar Sesión</span>
         </a>
     </div>
     

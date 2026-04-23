@@ -13,6 +13,7 @@ if ($_SESSION['rol'] !== 'cliente') {
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../models/Cliente.php';
 require_once __DIR__ . '/../../models/Reserva.php';
+require_once __DIR__ . '/../../utils/url_helper.php';
 
 $database = new Database();
 $db       = $database->getConnection();
@@ -58,6 +59,14 @@ $reservas_activas = count(array_filter($reservas, fn($r) => in_array($r['estado'
 $reservas_pasadas = count(array_filter($reservas, fn($r) => $r['estado'] === 'completada'));
 
 $username = $_SESSION['username'];
+
+// Construye rutas internas robustas para evitar errores por profundidad de carpetas.
+$appBase = app_base_path();
+
+$dashboardUrl = ($appBase !== '' ? $appBase : '') . '/views/cliente/dashboard.php';
+$reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php';
+$logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
+$cambiarPasswordUrl = ($appBase !== '' ? $appBase : '') . '/views/cliente/cambiar_password.php';
 
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
@@ -218,7 +227,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <div style="font-weight:600;font-size:14px"><?= htmlspecialchars($username) ?></div>
             <div style="font-size:11px;opacity:.8">Cliente</div>
         </div>
-        <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">
+        <a href="<?= htmlspecialchars($logoutUrl) ?>" class="btn-logout">
             🚪 Salir
         </a>
     </div>
@@ -232,7 +241,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <h1>¡Bienvenido, <?= htmlspecialchars($cliente_data['nombre'] ?? $username) ?>! 👋</h1>
             <p>Gestiona tus reservas y descubre nuestras habitaciones disponibles.</p>
         </div>
-        <a href="../../controllers/ReservaController.php?accion=crear" class="btn-nueva-reserva">
+        <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=crear" class="btn-nueva-reserva">
             ➕ Nueva Reserva
         </a>
     </div>
@@ -283,7 +292,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                             <div class="empty-state">
                                 <span>📅</span>
                                 Aún no tienes reservas.<br>
-                                <a href="../../controllers/ReservaController.php?accion=crear"
+                                          <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=crear"
                                    style="color:#1b98e0;text-decoration:none;font-weight:600">
                                    Haz tu primera reserva →
                                 </a>
@@ -307,7 +316,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                                 </span>
                             </td>
                             <td>
-                                <a href="../../controllers/ReservaController.php?accion=detalle&id=<?= $r['reserva_id'] ?>"
+                                          <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=detalle&id=<?= $r['reserva_id'] ?>"
                                    class="btn-ver">Ver</a>
                             </td>
                         </tr>
@@ -333,7 +342,7 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
                             <div class="hab-tipo"><?= ucfirst($h['tipo']) ?> · Piso <?= $h['piso'] ?></div>
                             <div class="hab-precio">$<?= number_format($h['precio_noche'],2) ?>/noche</div>
                             <div class="hab-cap">👤 Capacidad: <?= $h['capacidad'] ?></div>
-                            <a href="../../controllers/ReservaController.php?accion=crear&hab=<?= $h['habitacion_id'] ?>"
+                                     <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=crear&hab=<?= $h['habitacion_id'] ?>"
                                class="btn-reservar">Reservar</a>
                         </div>
                         <?php endforeach; ?>
@@ -389,28 +398,28 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             <!-- Acceso rápido -->
             <div class="section-title">⚡ Acceso Rápido</div>
             <div class="card" style="padding:15px">
-                <a href="../../controllers/ReservaController.php?accion=crear"
+                     <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=crear"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s;margin-bottom:5px"
                    onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">➕</span>
                     <div><div style="font-weight:600;font-size:14px">Nueva Reserva</div>
                     <div style="font-size:12px;color:#888">Reserva tu habitación</div></div>
                 </a>
-                     <a href="../../controllers/ReservaController.php"
+                                         <a href="<?= htmlspecialchars($reservasUrl) ?>"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s;margin-bottom:5px"
                    onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">📅</span>
                     <div><div style="font-weight:600;font-size:14px">Mis Reservas</div>
                     <div style="font-size:12px;color:#888">Ver historial</div></div>
                 </a>
-                     <a href="../../controllers/ReservaController.php?accion=crear"
+                                         <a href="<?= htmlspecialchars($reservasUrl) ?>?accion=crear"
                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s"
                    onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                     <span style="font-size:20px">🛏️</span>
                     <div><div style="font-weight:600;font-size:14px">Habitaciones</div>
                     <div style="font-size:12px;color:#888">Ver disponibilidad</div></div>
                 </a>
-                    <a href="../cliente/cambiar_password.php"
+                          <a href="<?= htmlspecialchars($cambiarPasswordUrl) ?>"
                        style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:8px;text-decoration:none;color:#333;transition:background .2s"
                        onmouseover="this.style.background='#eef7fb'" onmouseout="this.style.background=''">
                         <span style="font-size:20px">🔒</span>

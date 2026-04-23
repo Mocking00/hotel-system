@@ -1,16 +1,19 @@
-<?php
+﻿<?php
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
     exit();
 }
 
+require_once __DIR__ . '/../../utils/url_helper.php';
+
 $username = $_SESSION['username'];
 $rol = $_SESSION['rol'];
 $es_cliente = $rol === 'cliente';
 $es_recepcion = $rol === 'recepcionista';
+$appBase = app_base_path();
 $dashboard_url = $es_recepcion
-    ? '../views/recepcionista/dashboard.php'
-    : '../views/admin/dashboard.php';
+    ? $appBase . '/views/recepcionista/dashboard.php'
+    : $appBase . '/views/admin/dashboard.php';
 
 $badge = [
     'pendiente'  => ['bg'=>'#fff3cd','color'=>'#856404', 'icon'=>'⏳'],
@@ -142,21 +145,20 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
     </div>
     <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="../../controllers/ReservaController.php" class="menu-item active">📅 Reservas</a>
-    <a href="../../controllers/ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="./HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
+    <a href="./ReservaController.php" class="menu-item active">📅 Reservas</a>
+    <a href="./ClienteController.php" class="menu-item">👥 Clientes</a>
     <?php if (!$es_recepcion): ?>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
     <?php endif; ?>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">🚪 Cerrar Sesion</a>
 </div>
 <?php else: ?>
 <div class="topbar">
     <div class="left">🏨 Detalle de Reserva</div>
     <div class="right">
         <div><?= htmlspecialchars($username) ?></div>
-        <a href="../views/cliente/dashboard.php" class="btn">Panel</a>
-        <a href="../../controllers/UsuarioController.php?action=logout" class="btn">Salir</a>
+        <a href="<?php echo app_url('views/cliente/dashboard.php'); ?>" class="btn">Panel</a>
+        <a href="./UsuarioController.php?action=logout" class="btn">Salir</a>
     </div>
 </div>
 <?php endif; ?>
@@ -208,20 +210,20 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
                 <div class="card" style="margin-bottom:20px;">
                     <h2>Acciones</h2>
                     <div class="actions">
-                        <a href="../../controllers/ReservaController.php" class="btn btn-back">← Volver al listado</a>
+                        <a href="./ReservaController.php" class="btn btn-back">← Volver al listado</a>
 
                         <?php if (!$es_cliente && in_array($reserva_detalle['estado'], ['pendiente','confirmada'])): ?>
                             <?php if (empty($reserva_detalle['fecha_checkin'])): ?>
-                                <a href="../../controllers/ReservaController.php?accion=checkin&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                                <a href="./ReservaController.php?accion=checkin&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                    class="btn btn-ci" onclick="return confirm('¿Registrar check-in de esta reserva?')">Registrar Check-in</a>
                             <?php elseif (empty($reserva_detalle['fecha_checkout'])): ?>
-                                <a href="../../controllers/ReservaController.php?accion=checkout&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                                <a href="./ReservaController.php?accion=checkout&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                    class="btn btn-co" onclick="return confirm('¿Registrar check-out de esta reserva?')">Registrar Check-out</a>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php if (!$es_recepcion && in_array($reserva_detalle['estado'], ['pendiente','confirmada']) && empty($reserva_detalle['fecha_checkin'])): ?>
-                            <a href="../../controllers/ReservaController.php?accion=cancelar&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
+                            <a href="./ReservaController.php?accion=cancelar&id=<?= (int) $reserva_detalle['reserva_id'] ?>"
                                class="btn btn-can" onclick="return confirm('¿Cancelar esta reserva?')">Cancelar Reserva</a>
                         <?php endif; ?>
                     </div>
@@ -251,4 +253,6 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
 
 </body>
 </html>
+
+
 

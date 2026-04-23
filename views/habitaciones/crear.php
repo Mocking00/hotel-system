@@ -3,7 +3,18 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../auth/login.php");
     exit();
 }
+$requireUrlHelper = __DIR__ . '/../../utils/url_helper.php';
+require_once $requireUrlHelper;
 $username = $_SESSION['username'];
+$rol = $_SESSION['rol'] ?? 'administrador';
+$es_admin = $rol === 'administrador';
+$appBase = app_base_path();
+$dashboardUrl = ($appBase !== '' ? $appBase : '') . ($es_admin ? '/views/admin/dashboard.php' : '/views/recepcionista/dashboard.php');
+$habitacionesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/HabitacionController.php';
+$reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php';
+$clientesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php';
+$reportesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php?accion=reportes';
+$logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -118,18 +129,15 @@ $username = $_SESSION['username'];
         <div class="logo">🏨 HotelManager</div>
         <div class="role">Panel de Administración</div>
     </div>
-    <a href="../views/admin/dashboard.php" class="menu-item">
+    <a href="<?= htmlspecialchars($dashboardUrl) ?>" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
-    <a href="../../controllers/HabitacionController.php" class="menu-item active">
+    <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="../../controllers/ReservaController.php" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
-    <a href="../../controllers/ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
-    <a href="../../controllers/ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
-    <a href="../../controllers/UsuarioController.php?action=logout" class="menu-item">
-        <span class="menu-icon">🚪</span><span>Cerrar Sesión</span>
-    </a>
+    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
+    <a href="<?= htmlspecialchars($reportesUrl) ?>" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
 </div>
 
 <div class="main-content">
@@ -146,13 +154,13 @@ $username = $_SESSION['username'];
                     <div style="font-size:12px;color:#666;"><?= ucfirst($_SESSION['rol']) ?></div>
                 </div>
             </div>
-            <a href="../../controllers/UsuarioController.php?action=logout" class="btn-logout">Cerrar Sesión</a>
+            <a href="<?= htmlspecialchars($logoutUrl) ?>" class="btn-logout">Cerrar Sesión</a>
         </div>
     </div>
 
     <div class="content-area">
         <div class="breadcrumb">
-            <a href="../../controllers/HabitacionController.php">🛏️ Habitaciones</a> &rsaquo; Nueva
+            <a href="<?= htmlspecialchars($habitacionesUrl) ?>">🛏️ Habitaciones</a> &rsaquo; Nueva
         </div>
 
         <?php if (!empty($errores)): ?>
@@ -169,7 +177,7 @@ $username = $_SESSION['username'];
         <div class="form-card">
             <h2>📋 Datos de la Habitación</h2>
             <form method="POST"
-                  action="../../controllers/HabitacionController.php?accion=crear"
+                  action="<?= htmlspecialchars($habitacionesUrl) ?>?accion=crear"
                   id="formCrear">
 
                 <div class="form-grid">
@@ -240,7 +248,7 @@ $username = $_SESSION['username'];
                 </div>
 
                 <div class="form-footer">
-                    <a href="../../controllers/HabitacionController.php" class="btn-cancel">✕ Cancelar</a>
+                    <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="btn-cancel">✕ Cancelar</a>
                     <button type="submit" class="btn-save" id="btnGuardar">💾 Guardar Habitación</button>
                 </div>
 

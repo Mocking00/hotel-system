@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../utils/url_helper.php';
 $error = $_SESSION['error'] ?? '';
 $success = $_SESSION['success'] ?? '';
 $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
@@ -45,7 +46,7 @@ unset($_SESSION['error'], $_SESSION['success']);
     <div class="alert alert-success">✅ <?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="../../controllers/UsuarioController.php?action=registrar">
+    <form method="POST" action="<?php echo app_url('controllers/UsuarioController.php?action=registrar'); ?>">
         <div class="grid">
             <div>
                 <label>Nombre *</label>
@@ -90,7 +91,7 @@ unset($_SESSION['error'], $_SESSION['success']);
         </div>
 
         <div class="actions">
-            <a class="btn btn-back" href="../auth/login.php">Volver al login</a>
+            <a class="btn btn-back" href="<?php echo app_url('views/auth/login.php'); ?>">Volver al login</a>
             <button class="btn btn-save" type="submit">Crear cuenta</button>
         </div>
     </form>
