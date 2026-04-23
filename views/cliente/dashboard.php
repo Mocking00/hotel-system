@@ -96,12 +96,6 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             box-shadow:0 2px 12px rgba(0,0,0,.15);
         }
         .logo { font-size:22px; font-weight:bold; }
-        .nav-links { display:flex; gap:5px; }
-        .nav-link {
-            padding:7px 16px; color:rgba(255,255,255,.85); text-decoration:none;
-            border-radius:8px; font-size:14px; transition:all .2s;
-        }
-        .nav-link:hover,.nav-link.active { background:rgba(255,255,255,.2); color:white; }
         .user-area { display:flex; align-items:center; gap:12px; }
         .user-avatar {
             width:38px; height:38px; background:rgba(255,255,255,.25);
@@ -109,11 +103,11 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
             font-weight:bold; font-size:15px;
         }
         .btn-logout {
-            padding:7px 16px; background:rgba(255,255,255,.15);
-            border:1.5px solid rgba(255,255,255,.5); color:white;
+            padding:8px 16px; background:#dc3545;
+            border:1px solid #dc3545; color:white;
             border-radius:8px; font-size:13px; text-decoration:none; transition:all .2s;
         }
-        .btn-logout:hover { background:white; color:#1b98e0; }
+        .btn-logout:hover { background:#bb2d3b; border-color:#bb2d3b; color:white; }
 
         /* ── Layout ── */
         .container { max-width:1300px; margin:30px auto; padding:0 24px; }
@@ -207,7 +201,6 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
         @media (max-width:900px) {
             .main-grid { grid-template-columns:1fr; }
             .stats-grid { grid-template-columns:1fr 1fr; }
-            .nav-links  { display:none; }
         }
     </style>
 </head>
@@ -216,11 +209,6 @@ $iconos_tipo = ['simple'=>'🛏️','doble'=>'👫','suite'=>'⭐','presidencial
 <!-- Header -->
 <div class="header">
     <div class="logo">🏨 HotelManager</div>
-    <nav class="nav-links">
-        <a href="#mis-reservas" class="nav-link active">📅 Mis Reservas</a>
-        <a href="#habitaciones" class="nav-link">🛏️ Habitaciones</a>
-        <a href="#mi-perfil" class="nav-link">👤 Mi Perfil</a>
-    </nav>
     <div class="user-area">
         <div class="user-avatar"><?= strtoupper(substr($username,0,2)) ?></div>
         <div>

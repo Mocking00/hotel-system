@@ -45,12 +45,13 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         .menu-item {
             padding: 15px 20px; display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
-            transition: all .2s;
+            transition: all .2s; font-size: 14px; min-height: 52px;
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
             border-left-color: #1b98e0;
         }
+        .menu-icon { font-size: 20px; width: 24px; }
 
         .topbar {
             background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
@@ -62,7 +63,7 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         .topbar .right { display: flex; align-items: center; gap: 12px; }
         .topbar .btn {
             text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.5);
-            padding: 7px 14px; border-radius: 8px; font-size: 13px;
+            padding: 8px 16px; border-radius: 8px; font-size: 14px;
         }
 
         .main-content { margin-left: 260px; }
@@ -113,7 +114,7 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
         }
         .btn {
             text-decoration: none; border-radius: 8px; border: 1px solid;
-            padding: 8px 14px; font-size: 13px; font-weight: 600;
+            padding: 10px 16px; font-size: 14px; font-weight: 600;
             display: inline-block;
         }
         .btn-back { background: #f8f9fa; color: #555; border-color: #ddd; }
@@ -142,14 +143,14 @@ $bc = $badge[$reserva_detalle['estado']] ?? $badge['pendiente'];
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
+        <div class="role">Panel de Administracion</div>
     </div>
-    <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
-    <a href="./HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="./ReservaController.php" class="menu-item active">📅 Reservas</a>
-    <a href="./ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span><span>Dashboard</span></a>
+    <a href="./ReservaController.php" class="menu-item active"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span><span>Habitaciones</span></a>
+    <a href="./ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
     <?php if (!$es_recepcion): ?>
-    <a href="./ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
     <?php endif; ?>
 </div>
 <?php else: ?>

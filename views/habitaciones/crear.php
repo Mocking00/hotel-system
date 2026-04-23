@@ -37,6 +37,7 @@ $logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController
             padding: 15px 20px; cursor: pointer; transition: all 0.3s;
             display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
+            font-size: 14px; min-height: 52px;
         }
         .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #1b98e0; }
         .menu-icon { font-size: 20px; width: 24px; }
@@ -127,15 +128,15 @@ $logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de Administración</div>
+        <div class="role">Panel de Administracion</div>
     </div>
     <a href="<?= htmlspecialchars($dashboardUrl) ?>" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
+    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
     <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
     <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
     <a href="<?= htmlspecialchars($reportesUrl) ?>" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
 </div>

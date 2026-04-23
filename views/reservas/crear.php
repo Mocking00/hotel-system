@@ -36,12 +36,13 @@ $dashboard_url = $es_recepcion
         .menu-item {
             padding: 15px 20px; display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
-            transition: all .2s;
+            transition: all .2s; font-size: 14px; min-height: 52px;
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
             border-left-color: #1b98e0;
         }
+        .menu-icon { font-size: 20px; width: 24px; }
 
         .topbar {
             background: linear-gradient(135deg, #1b98e0 0%, #0b2545 100%);
@@ -53,7 +54,7 @@ $dashboard_url = $es_recepcion
         .topbar .right { display: flex; align-items: center; gap: 12px; }
         .topbar .btn {
             text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.5);
-            padding: 7px 14px; border-radius: 8px; font-size: 13px;
+            padding: 8px 16px; border-radius: 8px; font-size: 14px;
         }
 
         .main-content { margin-left: 260px; }
@@ -140,14 +141,14 @@ $dashboard_url = $es_recepcion
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
+        <div class="role">Panel de Administracion</div>
     </div>
-    <a href="<?= $dashboard_url ?>" class="menu-item">📊 Dashboard</a>
-    <a href="./HabitacionController.php" class="menu-item">🛏️ Habitaciones</a>
-    <a href="./ReservaController.php" class="menu-item active">📅 Reservas</a>
-    <a href="./ClienteController.php" class="menu-item">👥 Clientes</a>
+    <a href="<?= $dashboard_url ?>" class="menu-item"><span class="menu-icon">📊</span><span>Dashboard</span></a>
+    <a href="./ReservaController.php" class="menu-item active"><span class="menu-icon">📅</span><span>Reservas</span></a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span><span>Habitaciones</span></a>
+    <a href="./ClienteController.php" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
     <?php if (!$es_recepcion): ?>
-    <a href="./ReservaController.php?accion=reportes" class="menu-item">📈 Reportes</a>
+    <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
     <?php endif; ?>
 </div>
 <?php else: ?>

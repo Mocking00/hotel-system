@@ -14,9 +14,9 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
         .sidebar{width:260px;background:#12355b;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
         .logo-section{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px}
         .logo{font-size:24px;font-weight:bold;margin-bottom:5px}
-        .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px}
+        .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px;min-height:52px}
         .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#1b98e0}
-        .menu-icon{font-size:18px;width:22px}
+        .menu-icon{font-size:20px;width:24px}
         .main-content{margin-left:260px}
         .header{background:white;padding:20px 30px;box-shadow:0 2px 5px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
         .header h1{color:#333;font-size:24px;margin-bottom:4px}
@@ -48,11 +48,11 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years')); ?>
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role" style="font-size:13px;opacity:.8">Panel de Administración</div>
+        <div class="role" style="font-size:13px;opacity:.8">Panel de Administracion</div>
     </div>
     <a href="<?php echo app_url('views/admin/dashboard.php'); ?>" class="menu-item"><span class="menu-icon">📊</span>Dashboard</a>
-    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
     <a href="./ReservaController.php" class="menu-item"><span class="menu-icon">📅</span>Reservas</a>
+    <a href="./HabitacionController.php" class="menu-item"><span class="menu-icon">🛏️</span>Habitaciones</a>
     <a href="./ClienteController.php" class="menu-item active"><span class="menu-icon">👥</span>Clientes</a>
     <a href="./ReservaController.php?accion=reportes" class="menu-item"><span class="menu-icon">📈</span>Reportes</a>
 </div>

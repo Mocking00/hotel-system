@@ -100,7 +100,7 @@ $badge = [
         .logo-section { padding:0 20px 20px; border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:20px; }
         .logo { font-size:24px; font-weight:bold; margin-bottom:5px; }
         .role { font-size:13px; opacity:0.8; }
-        .menu-item { padding:15px 20px; display:flex; align-items:center; gap:12px; border-left:4px solid transparent; text-decoration:none; color:white; transition:all .3s; font-size:14px; }
+        .menu-item { padding:15px 20px; display:flex; align-items:center; gap:12px; border-left:4px solid transparent; text-decoration:none; color:white; transition:all .3s; font-size:14px; min-height:52px; }
         .menu-item:hover,.menu-item.active { background:rgba(255,255,255,.1); border-left-color:#1b98e0; }
         .menu-icon { font-size:20px; width:24px; }
 
@@ -164,7 +164,7 @@ $badge = [
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div class="role">Panel de Recepción</div>
+        <div class="role">Panel de Administracion</div>
     </div>
 
     <a href="<?= htmlspecialchars($dashboardUrl) ?>" class="menu-item active">

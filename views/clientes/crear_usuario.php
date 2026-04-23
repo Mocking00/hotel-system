@@ -16,7 +16,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
         .sidebar{width:260px;background:#12355b;color:white;min-height:100vh;padding:20px 0;position:fixed;left:0;top:0}
         .logo-section{padding:0 20px 20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px}
         .logo{font-size:24px;font-weight:bold;margin-bottom:5px}
-        .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px}
+        .menu-item{padding:15px 20px;display:flex;align-items:center;gap:12px;border-left:4px solid transparent;text-decoration:none;color:white;transition:all .3s;font-size:14px;min-height:52px}
         .menu-item:hover,.menu-item.active{background:rgba(255,255,255,.1);border-left-color:#1b98e0}
         .main-content{margin-left:260px}
         .header{background:white;padding:20px 30px;box-shadow:0 2px 5px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
@@ -40,7 +40,7 @@ $fecha_max_mayoria_edad = date('Y-m-d', strtotime('-18 years'));
 <div class="sidebar">
     <div class="logo-section">
         <div class="logo">🏨 HotelManager</div>
-        <div style="font-size:13px;opacity:.8">Panel de <?= ucfirst(htmlspecialchars($rol)) ?></div>
+        <div style="font-size:13px;opacity:.8">Panel de Administracion</div>
     </div>
     <a href="./ClienteController.php" class="menu-item active">👥 Clientes</a>
     <a href="./ReservaController.php" class="menu-item">📅 Reservas</a>

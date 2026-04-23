@@ -107,6 +107,7 @@ $urlLogout = $appBase . '/controllers/UsuarioController.php?action=logout';
             display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent;
             text-decoration: none; color: white;
+            font-size: 14px; min-height: 52px;
         }
         .menu-item:hover, .menu-item.active {
             background: rgba(255,255,255,0.1);
@@ -187,21 +188,20 @@ $urlLogout = $appBase . '/controllers/UsuarioController.php?action=logout';
     <div class="sidebar">
         <div class="logo-section">
             <div class="logo">🏨 HotelManager</div>
-            <div class="role">Panel de Administración</div>
+            <div class="role">Panel de Administracion</div>
         </div>
         
         <a href="<?= htmlspecialchars($urlAdminDashboard) ?>" class="menu-item active">
             <span class="menu-icon">📊</span>
             <span>Dashboard</span>
         </a>
-        <a href="<?= htmlspecialchars($urlHabitaciones) ?>" class="menu-item">
-            <span class="menu-icon">🛏️</span>
-            <span>Habitaciones</span>
-        </a>
-        <!-- ✅ Reservas — enlace real -->
         <a href="<?= htmlspecialchars($urlReservas) ?>" class="menu-item">
             <span class="menu-icon">📅</span>
             <span>Reservas</span>
+        </a>
+        <a href="<?= htmlspecialchars($urlHabitaciones) ?>" class="menu-item">
+            <span class="menu-icon">🛏️</span>
+            <span>Habitaciones</span>
         </a>
         <!-- ✅ Clientes — enlace real -->
         <a href="<?= htmlspecialchars($urlClientes) ?>" class="menu-item">

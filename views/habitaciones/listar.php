@@ -18,7 +18,7 @@ $reservasUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaControll
 $clientesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ClienteController.php';
 $reportesUrl = ($appBase !== '' ? $appBase : '') . '/controllers/ReservaController.php?accion=reportes';
 $logoutUrl = ($appBase !== '' ? $appBase : '') . '/controllers/UsuarioController.php?action=logout';
-$panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
+$panel_label = 'Panel de Administracion';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -41,6 +41,7 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
             padding: 15px 20px; cursor: pointer; transition: all 0.3s;
             display: flex; align-items: center; gap: 12px;
             border-left: 4px solid transparent; text-decoration: none; color: white;
+            font-size: 14px; min-height: 52px;
         }
         .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: #1b98e0; }
         .menu-icon { font-size: 20px; width: 24px; }
@@ -168,10 +169,10 @@ $panel_label = $es_admin ? 'Panel de Administración' : 'Panel de Recepción';
     <a href="<?= htmlspecialchars($dashboard_url) ?>" class="menu-item">
         <span class="menu-icon">📊</span><span>Dashboard</span>
     </a>
+    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
     <a href="<?= htmlspecialchars($habitacionesUrl) ?>" class="menu-item active">
         <span class="menu-icon">🛏️</span><span>Habitaciones</span>
     </a>
-    <a href="<?= htmlspecialchars($reservasUrl) ?>" class="menu-item"><span class="menu-icon">📅</span><span>Reservas</span></a>
     <a href="<?= htmlspecialchars($clientesUrl) ?>" class="menu-item"><span class="menu-icon">👥</span><span>Clientes</span></a>
     <?php if ($es_admin): ?>
     <a href="<?= htmlspecialchars($reportesUrl) ?>" class="menu-item"><span class="menu-icon">📈</span><span>Reportes</span></a>
